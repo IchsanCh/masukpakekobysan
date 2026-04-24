@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
         $admin = User::create([
             'name' => 'Admin Agendaris',
             'username' => 'admin',
-            'email' => 'admin@dpmptsp.go.id',
+            'email' => 'ichsanmuhammed01@gmail.com',
             'password' => Hash::make('password'),
             'no_wa' => '08123456789',
             'jabatan_struktural' => 'Agendaris',

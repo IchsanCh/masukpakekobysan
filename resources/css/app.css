@@ -1,5 +1,7 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+    themes: light --default;
+}
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -7,7 +9,34 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+    --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif,
         "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
         "Noto Color Emoji";
+    --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+
+    /* Color Palette - Ocean Trust */
+    --color-navy-900: #0b192c;
+    --color-navy-800: #111e33;
+    --color-navy-700: #1e3a5f;
+    --color-navy-600: #2a4a73;
+
+    --color-blue-500: #3b82f6;
+    --color-blue-600: #2563eb;
+    --color-blue-400: #60a5fa;
+    --color-blue-100: #dbeafe;
+    --color-blue-50: #e0f2fe;
+
+    --color-slate-900: #0f172a;
+    --color-slate-700: #334155;
+    --color-slate-500: #64748b;
+    --color-slate-400: #94a3b8;
+    --color-slate-300: #cbd5e1;
+    --color-slate-200: #e2e8f0;
+    --color-slate-100: #f1f5f9;
+    --color-slate-50: #f8fafc;
+
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-danger: #ef4444;
+    --color-info: #3b82f6;
 }
