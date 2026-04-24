@@ -12,29 +12,29 @@ return new class () extends Migration {
     {
         Schema::create('surat_masuks', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_surat', 50)->nullable();           // kode klasifikasi arsip
-            $table->string('nomor_surat', 100);                     // isi manual dari pengirim
+            $table->string('nomor_agenda', 50)->unique();
+            $table->string('nomor_surat', 100);
             $table->date('tanggal_surat');
             $table->date('tanggal_diterima');
             $table->text('isi_ringkasan');
             $table->string('pengirim');
-            $table->string('sifat_surat', 50)->nullable();          // Biasa / Penting / Rahasia / Segera
-            $table->string('file_surat')->nullable();               // path file upload
+            $table->enum('sifat_surat', ['biasa', 'segera', 'sangat_segera', 'rahasia'])->default('biasa');
+            $table->string('file_surat')->nullable();
 
             // Retensi & Arsip
             $table->foreignId('referensi_retensi_id')
                   ->nullable()
-                  ->constrained('referensi_retensi')
+                  ->constrained('referensi_retensis')
                   ->nullOnDelete();
             $table->unsignedInteger('retensi_tahun')->default(2);
-            $table->enum('status_arsip', ['Aktif', 'Inaktif', 'Musnah', 'Permanen'])
-                  ->default('Aktif');
-            $table->enum('nasib_akhir', ['Musnah', 'Permanen', 'Statis'])->nullable();
+            $table->enum('status_disposisi', ['baru', 'diproses', 'selesai'])->default('baru');
+            $table->enum('status_arsip', ['aktif', 'inaktif', 'musnah', 'permanen'])->default('aktif');
+            $table->enum('nasib_akhir', ['musnah', 'permanen', 'dinilai_kembali'])->nullable();
 
-            // Relasi ke operator yang input
-            $table->foreignId('user_id')
+            // Relasi ke user yang input
+            $table->foreignId('dibuat_oleh')
                   ->nullable()
-                  ->constrained()
+                  ->constrained('users')
                   ->nullOnDelete();
 
             $table->timestamps();

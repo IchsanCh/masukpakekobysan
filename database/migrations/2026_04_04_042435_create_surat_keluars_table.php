@@ -12,30 +12,27 @@ return new class () extends Migration {
     {
         Schema::create('surat_keluars', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_surat', 50);                       // kode klasifikasi, misal: 800, 060
-            $table->unsignedInteger('nomor_urut');                   // integer untuk kalkulasi urutan
-            $table->string('nomor_surat', 255);                     // hasil generate: "800/001/2026"
+            $table->string('nomor_surat', 255)->unique();
             $table->date('tanggal_surat');
             $table->text('isi_ringkasan');
             $table->string('kepada');
-            $table->string('pengelola')->nullable();                 // nama pengelola / bidang pengirim
+            $table->string('pengelola')->nullable();
             $table->string('lampiran')->nullable();
             $table->string('file_surat')->nullable();
 
             // Retensi & Arsip
             $table->foreignId('referensi_retensi_id')
                   ->nullable()
-                  ->constrained('referensi_retensi')
+                  ->constrained('referensi_retensis')
                   ->nullOnDelete();
             $table->unsignedInteger('retensi_tahun')->default(2);
-            $table->enum('status_arsip', ['Aktif', 'Inaktif', 'Musnah', 'Permanen'])
-                  ->default('Aktif');
-            $table->enum('nasib_akhir', ['Musnah', 'Permanen', 'Statis'])->nullable();
+            $table->enum('status_arsip', ['aktif', 'inaktif', 'musnah', 'permanen'])->default('aktif');
+            $table->enum('nasib_akhir', ['musnah', 'permanen', 'dinilai_kembali'])->nullable();
 
-            // Relasi ke operator yang input
-            $table->foreignId('user_id')
+            // Relasi ke user yang input
+            $table->foreignId('dibuat_oleh')
                   ->nullable()
-                  ->constrained()
+                  ->constrained('users')
                   ->nullOnDelete();
 
             $table->timestamps();

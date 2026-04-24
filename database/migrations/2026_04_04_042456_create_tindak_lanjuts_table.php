@@ -19,7 +19,7 @@ return new class () extends Migration {
                   ->constrained('users')
                   ->cascadeOnDelete();
             $table->text('keterangan');
-            $table->string('file_bukti')->nullable();               // path file bukti upload
+            $table->enum('status', ['draft', 'terkirim'])->default('draft');
             $table->timestamps();
         });
     }

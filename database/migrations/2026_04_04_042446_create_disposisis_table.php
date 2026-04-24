@@ -13,13 +13,11 @@ return new class () extends Migration {
         Schema::create('disposisis', function (Blueprint $table) {
             $table->id();
 
-            // Bisa dari surat masuk (disposisi umumnya dari surat masuk)
             $table->foreignId('surat_masuk_id')
-                  ->nullable()
                   ->constrained('surat_masuks')
                   ->cascadeOnDelete();
 
-            // Disposisi berantai: opsional parent disposisi
+            // Disposisi berantai
             $table->foreignId('parent_id')
                   ->nullable()
                   ->constrained('disposisis')
@@ -30,7 +28,7 @@ return new class () extends Migration {
                   ->constrained('users')
                   ->cascadeOnDelete();
 
-            // Tipe tujuan: ke unit (broadcast) atau personal
+            // Tujuan
             $table->enum('tipe_tujuan', ['unit', 'personal']);
             $table->foreignId('unit_id')
                   ->nullable()
@@ -42,8 +40,11 @@ return new class () extends Migration {
                   ->nullOnDelete();
 
             $table->text('instruksi');
-            $table->enum('status', ['pending', 'dibaca', 'diproses', 'selesai'])->default('pending');
+            $table->date('batas_waktu')->nullable();
+            $table->enum('status', ['menunggu', 'diterima', 'diproses', 'selesai', 'ditolak'])->default('menunggu');
+            $table->text('alasan_ditolak')->nullable();
             $table->timestamp('dibaca_at')->nullable();
+            $table->timestamp('diselesaikan_at')->nullable();
             $table->timestamps();
         });
     }

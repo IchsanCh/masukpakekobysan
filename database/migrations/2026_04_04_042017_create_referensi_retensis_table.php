@@ -10,13 +10,14 @@ return new class () extends Migration {
      */
     public function up(): void
     {
-        Schema::create('referensi_retensi', function (Blueprint $table) {
+        Schema::create('referensi_retensis', function (Blueprint $table) {
             $table->id();
             $table->string('kode_klasifikasi', 50)->unique();
             $table->string('nama_kegiatan');
-            $table->unsignedInteger('masa_aktif')->default(2);    // tahun
-            $table->unsignedInteger('masa_inaktif')->default(3);  // tahun
-            $table->enum('nasib_akhir_default', ['Musnah', 'Permanen', 'Statis'])->default('Musnah');
+            $table->unsignedInteger('masa_aktif')->default(2);
+            $table->unsignedInteger('masa_inaktif')->default(3);
+            $table->enum('nasib_akhir_default', ['musnah', 'permanen', 'dinilai_kembali'])->default('musnah');
+            $table->unsignedInteger('default_batas_waktu_hari')->nullable();
             $table->timestamps();
         });
     }

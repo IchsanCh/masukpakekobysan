@@ -17,7 +17,7 @@ return new class () extends Migration {
             $table->string('email')->unique()->nullable();
             $table->string('password');
             $table->string('no_wa', 20)->nullable();
-            $table->string('jabatan')->nullable();
+            $table->string('jabatan_struktural')->nullable();
             $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();
@@ -44,8 +44,8 @@ return new class () extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

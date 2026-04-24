@@ -59,7 +59,12 @@ return [
             'throw' => false,
             'report' => false,
         ],
-
+         'google' => [
+            'driver' => 'google',
+            'service_account_json' => storage_path('app/google/service-account.json'),
+            'shared_folder_id' => env('GOOGLE_DRIVE_FOLDER_ID', ''),
+            'folder' => env('GOOGLE_DRIVE_FOLDER', '/'),
+        ],
     ],
 
     /*
