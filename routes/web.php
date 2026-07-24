@@ -4,6 +4,9 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReferensiRetensiController;
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Guest routes
@@ -23,4 +26,11 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Master Data — hanya agendaris, modal-based (no create/edit pages)
+    Route::middleware('role:agendaris')->group(function () {
+        Route::resource('units', UnitController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::resource('retensi', ReferensiRetensiController::class)->only(['index', 'store', 'update', 'destroy']);
+    });
 });

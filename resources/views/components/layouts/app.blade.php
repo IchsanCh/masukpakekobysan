@@ -13,7 +13,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="min-h-screen bg-base-200">
+<body class="min-h-screen bg-base-200" x-data>
     <div class="drawer lg:drawer-open">
         <input id="sidebar-toggle" type="checkbox" class="drawer-toggle" />
 
@@ -24,9 +24,6 @@
 
             {{-- Page Content --}}
             <main class="flex-1 p-6">
-                {{-- Flash Messages --}}
-                <x-alert />
-
                 {{ $slot }}
             </main>
         </div>
@@ -34,6 +31,12 @@
         {{-- Sidebar --}}
         <x-sidebar />
     </div>
+
+    {{-- Global Toast Notifications --}}
+    <x-toast />
+
+    {{-- Global Confirm Delete Modal --}}
+    <x-confirm-delete />
 </body>
 
 </html>

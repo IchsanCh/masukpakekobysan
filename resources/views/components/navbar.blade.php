@@ -1,33 +1,26 @@
-{{-- Top navbar for mobile toggle + user dropdown --}}
-<div class="navbar bg-base-100 shadow-sm lg:shadow-none">
-    <div class="flex-none lg:hidden">
-        <label for="sidebar-toggle" class="btn btn-square btn-ghost">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-        </label>
-    </div>
+<div class="sticky top-0 z-30 flex items-center h-14 px-4 bg-white/80 backdrop-blur-md border-b border-[var(--color-slate-200)]">
+    <label for="sidebar-toggle" class="btn btn-ghost btn-sm btn-square lg:hidden mr-2">
+        <x-icon name="bars-3" class="w-5 h-5 text-[var(--color-slate-500)]" />
+    </label>
 
-    <div class="flex-1">
-        <h1 class="text-lg font-semibold px-2">{{ $title ?? '' }}</h1>
-    </div>
+    <div class="flex-1"></div>
 
-    <div class="flex-none">
+    <div class="lg:hidden">
         <div class="dropdown dropdown-end">
-            <div tabindex="0" role="button" class="btn btn-ghost gap-2">
-                <div class="avatar placeholder">
-                    <div class="bg-primary text-primary-content w-8 rounded-full">
-                        <span class="text-sm">{{ substr(auth()->user()->name ?? 'U', 0, 1) }}</span>
-                    </div>
+            <div tabindex="0" role="button" class="btn btn-ghost btn-sm btn-circle">
+                <div class="w-7 h-7 rounded-full bg-[var(--color-blue-100)] flex items-center justify-center">
+                    <span class="text-[var(--color-blue-600)] text-xs font-bold">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</span>
                 </div>
-                <span class="hidden sm:inline">{{ auth()->user()->name ?? 'User' }}</span>
             </div>
-            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-52 p-2 shadow-lg">
-                <li class="menu-title">{{ auth()->user()->jabatan_struktural ?? '-' }}</li>
+            <ul tabindex="0" class="dropdown-content menu bg-white rounded-xl z-50 w-48 p-1.5 shadow-lg border border-[var(--color-slate-200)]">
+                <li class="px-3 py-2">
+                    <p class="text-xs font-medium text-[var(--color-navy-900)]">{{ auth()->user()->name }}</p>
+                </li>
+                <div class="divider my-0.5"></div>
                 <li>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="w-full text-left">Logout</button>
+                        <button type="submit" class="text-sm text-[var(--color-danger)]">Logout</button>
                     </form>
                 </li>
             </ul>

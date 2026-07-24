@@ -1,7 +1,9 @@
 <x-layouts.guest title="Login">
-    <div class="min-h-screen flex flex-col lg:flex-row">
+    <div class="min-h-screen flex flex-col lg:flex-row bg-[var(--color-slate-900)]">
         {{-- Left - Form --}}
-        <div class="flex-1 flex items-center justify-center p-6 sm:p-10 bg-[var(--color-slate-50)]">
+        <div
+            class="flex-1 flex items-center justify-center p-6 sm:p-10
+                    bg-[var(--color-slate-50)] lg:rounded-r-[60px] lg:shadow-2xl relative z-10">
             <div
                 class="w-full max-w-[380px] bg-white/80 backdrop-blur-xl p-6 sm:p-8 rounded-2xl shadow-xl border border-white/40">
 
@@ -14,7 +16,7 @@
 
                 <x-alert />
 
-                <form method="POST" action="{{ route('login') }}">
+                <form method="POST" action="{{ route('login') }}" x-data="{ loading: false }" @submit="loading = true">
                     @csrf
 
                     {{-- Username --}}
@@ -41,13 +43,12 @@
                     </div>
 
                     {{-- Submit --}}
-                    <button type="submit"
-                        class="w-full py-3 rounded-xl text-sm font-semibold text-white
-                            bg-gradient-to-r from-[var(--color-blue-500)] to-[var(--color-blue-600)]
-                            transition-all duration-300
-                            hover:scale-[1.02] hover:shadow-xl hover:shadow-[var(--color-blue-500)]/30">
-                        Masuk
-                    </button>
+                    <form x-data="{ loading: false }" @submit="loading = true">
+                        <x-auth.button-submit loadingText="Loading..."
+                            class="w-full py-3 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-[var(--color-blue-500)] to-[var(--color-blue-600)] ...">
+                            Masuk
+                        </x-auth.button-submit>
+                    </form>
                 </form>
 
                 <p class="text-center text-xs text-[var(--color-slate-500)] mt-7">
@@ -76,7 +77,7 @@
             {{-- Center brand --}}
             <div class="relative z-10">
                 <h1
-                    class="font-[var(--font-heading)] text-[44px] font-bold text-white mb-3 tracking-tight leading-none">
+                    class="font-[var(--font-heading)]  text-[44px] font-semibold text-white mb-3 tracking-wide leading-none">
                     MasukPakEko
                 </h1>
                 <p class="text-[15px] text-[var(--color-slate-400)] leading-relaxed max-w-[320px]">
