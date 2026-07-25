@@ -27,8 +27,6 @@ class ReferensiRetensiSeeder extends Seeder
 {
     public function run(): void
     {
-        ReferensiRetensi::truncate();
-
         $data = [
 
             // ──────────────────────────────────────────────────────────────
