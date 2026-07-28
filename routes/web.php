@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReferensiRetensiController;
+use App\Http\Controllers\SuratMasukController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -32,5 +33,10 @@ Route::middleware('auth')->group(function () {
         Route::resource('units', UnitController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('retensi', ReferensiRetensiController::class)->only(['index', 'store', 'update', 'destroy']);
+
+        // Surat Masuk — halaman create/edit terpisah (ada upload file)
+        Route::resource('surat-masuk', SuratMasukController::class)->only([
+            'index', 'create', 'store', 'edit', 'update', 'destroy',
+        ]);
     });
 });
