@@ -159,6 +159,11 @@
                             </td>
                             <td class="px-5 py-3.5 text-right">
                                 <div class="flex items-center justify-end gap-1">
+                                    <a href="{{ route('disposisi.show', $s) }}"
+                                        class="p-1.5 rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-blue-500)] hover:bg-[var(--color-blue-50)] transition-colors"
+                                        title="Disposisi">
+                                        <x-icon name="arrow-right-circle" class="w-4 h-4" />
+                                    </a>
                                     <a href="{{ route('surat-masuk.edit', $s) }}"
                                         class="p-1.5 rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-blue-500)] hover:bg-[var(--color-blue-50)] transition-colors"
                                         title="Edit">

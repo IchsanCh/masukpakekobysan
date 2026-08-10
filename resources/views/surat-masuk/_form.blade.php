@@ -14,6 +14,7 @@
         previewType: null,
         fileSizeError: false,
         dragging: false,
+        submitting: false,
         maxMB: 10,
 
         handleFile(file) {
@@ -29,10 +30,8 @@
         onDrop(e) {
             this.dragging = false;
             const file = e.dataTransfer.files[0];
-            if (file) {
-                this.$refs.fileInput.files = e.dataTransfer.files;
-                this.handleFile(file);
-            }
+            if (file) { this.$refs.fileInput.files = e.dataTransfer.files;
+                this.handleFile(file); }
         },
         clearFile() {
             this.$refs.fileInput.value = '';
@@ -46,7 +45,7 @@
             const opt = el.options[el.selectedIndex];
             if (opt && opt.dataset.masaAktif) { this.$refs.retensiTahunInput.value = opt.dataset.masaAktif; }
         }
-    }">
+    }" @submit="submitting = true">
     @csrf
     @if ($isEdit)
         @method('PUT')
@@ -271,13 +270,14 @@
     </div>
 
     <div class="flex gap-2 mt-5 justify-end">
-        <a href="{{ route('surat-masuk.index') }}"
+        <a href="{{ route('surat-masuk.index') }}" :class="submitting ? 'pointer-events-none opacity-50' : ''"
             class="px-4 py-2.5 rounded-xl text-sm font-medium text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] transition-colors">Batal</a>
-        <button type="submit" :disabled="fileSizeError"
+        <button type="submit" :disabled="fileSizeError || submitting"
             class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-br from-[var(--color-blue-500)] to-[var(--color-blue-600)]
                    shadow-[0_4px_10px_-2px_rgba(37,99,235,0.35)] hover:shadow-[0_8px_16px_-2px_rgba(37,99,235,0.45)] transition-all
-                   disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none">
-            {{ $isEdit ? 'Simpan Perubahan' : 'Simpan Surat' }}
+                   disabled:opacity-60 disabled:cursor-not-allowed disabled:shadow-none inline-flex items-center gap-2">
+            <span x-show="submitting" class="loading loading-spinner loading-xs"></span>
+            <span x-text="submitting ? 'Menyimpan...' : '{{ $isEdit ? 'Simpan Perubahan' : 'Simpan Surat' }}'"></span>
         </button>
     </div>
 </form>

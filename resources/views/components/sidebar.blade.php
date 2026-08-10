@@ -47,7 +47,7 @@
             </a>
 
             @php $active = request()->routeIs('disposisi.*'); @endphp
-            <a href="#"
+            <a href="{{ route('disposisi.inbox') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                       {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                 <x-icon name="arrow-right-circle" :solid="$active" class="w-[18px] h-[18px]" />

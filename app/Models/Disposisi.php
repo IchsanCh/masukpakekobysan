@@ -44,6 +44,15 @@ class Disposisi extends Model
         return $this->hasMany(Disposisi::class, 'parent_id');
     }
 
+    /**
+     * Sama seperti children(), tapi eager-load seluruh keturunannya secara rekursif
+     * (dipakai buat render pohon disposisi penuh dalam 1 query bertingkat).
+     */
+    public function childrenRecursive(): HasMany
+    {
+        return $this->children()->with(['childrenRecursive', 'dariUser', 'unit', 'kepadaUser']);
+    }
+
     public function dariUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'dari_user_id');
@@ -67,5 +76,24 @@ class Disposisi extends Model
     public function waNotifications(): HasMany
     {
         return $this->hasMany(WaNotification::class, 'disposisi_id');
+    }
+
+    /**
+     * Siapapun di unit tujuan (semua peran) bisa menerima/memproses/meneruskan
+     * disposisi yang tipe_tujuan-nya 'unit'. Kalau tipe_tujuan 'personal',
+     * hanya orang yang dituju yang boleh bertindak.
+     */
+    public function canBeActedBy(User $user): bool
+    {
+        if ($this->tipe_tujuan === 'personal') {
+            return $this->kepada_user_id === $user->id;
+        }
+
+        return $this->unit_id !== null && $user->units()->where('units.id', $this->unit_id)->exists();
+    }
+
+    public function isTerminal(): bool
+    {
+        return in_array($this->status, ['selesai', 'ditolak']);
     }
 }

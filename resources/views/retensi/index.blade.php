@@ -174,6 +174,7 @@
             open: false,
             isEdit: false,
             id: null,
+            submitting: false,
             kode_klasifikasi: '',
             nama_kegiatan: '',
             masa_aktif: 2,
@@ -192,6 +193,7 @@
                 this.default_batas_waktu_hari = 14; }
         }"
             @open-retensi-modal.window="
+            submitting = false;
             if ($event.detail?.id) { isEdit = true; Object.assign($data, $event.detail); } else { reset(); }
             open = true;
          ">
@@ -213,7 +215,8 @@
                                 name="x-mark" class="w-5 h-5 text-[var(--color-slate-400)]" /></button>
                     </div>
 
-                    <form method="POST" :action="isEdit ? '{{ url('retensi') }}/' + id : '{{ route('retensi.store') }}'">
+                    <form method="POST" :action="isEdit ? '{{ url('retensi') }}/' + id : '{{ route('retensi.store') }}'"
+                        @submit="submitting = true">
                         @csrf
                         <template x-if="isEdit"><input type="hidden" name="_method" value="PUT" /></template>
 
@@ -297,11 +300,13 @@
                         </div>
 
                         <div class="flex gap-2 mt-6 justify-end">
-                            <button type="button" @click="open = false"
-                                class="px-4 py-2.5 rounded-xl text-sm font-medium text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] transition-colors">Batal</button>
-                            <button type="submit"
-                                class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-br from-[var(--color-blue-500)] to-[var(--color-blue-600)] shadow-[0_4px_10px_-2px_rgba(37,99,235,0.35)] hover:shadow-[0_8px_16px_-2px_rgba(37,99,235,0.45)] transition-all"
-                                x-text="isEdit ? 'Simpan' : 'Tambah'"></button>
+                            <button type="button" @click="open = false" :disabled="submitting"
+                                class="px-4 py-2.5 rounded-xl text-sm font-medium text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Batal</button>
+                            <button type="submit" :disabled="submitting"
+                                class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-br from-[var(--color-blue-500)] to-[var(--color-blue-600)] shadow-[0_4px_10px_-2px_rgba(37,99,235,0.35)] hover:shadow-[0_8px_16px_-2px_rgba(37,99,235,0.45)] transition-all disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center gap-2">
+                                <span x-show="submitting" class="loading loading-spinner loading-xs"></span>
+                                <span x-text="submitting ? 'Menyimpan...' : (isEdit ? 'Simpan' : 'Tambah')"></span>
+                            </button>
                         </div>
                     </form>
                 </div>

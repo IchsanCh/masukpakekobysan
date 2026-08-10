@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DisposisiController;
 use App\Http\Controllers\ReferensiRetensiController;
 use App\Http\Controllers\SuratMasukController;
 use App\Http\Controllers\UnitController;
@@ -34,9 +35,21 @@ Route::middleware('auth')->group(function () {
         Route::resource('users', UserController::class)->only(['index', 'store', 'update', 'destroy']);
         Route::resource('retensi', ReferensiRetensiController::class)->only(['index', 'store', 'update', 'destroy']);
 
-        // Surat Masuk — halaman create/edit terpisah (ada upload file)
+        // Input & kelola surat masuk — tetap agendaris-only (petugas agenda)
         Route::resource('surat-masuk', SuratMasukController::class)->only([
-            'index', 'create', 'store', 'edit', 'update', 'destroy',
+            'create', 'store', 'edit', 'update', 'destroy',
         ]);
     });
+
+    // Lihat daftar surat masuk — agendaris (input) & pimpinan (pengawasan), dipakai buat mulai disposisi
+    Route::middleware('role:agendaris,pimpinan')->group(function () {
+        Route::get('surat-masuk', [SuratMasukController::class, 'index'])->name('surat-masuk.index');
+    });
+
+    // Disposisi — akses per-role dicek di controller (unit tujuan bisa siapapun: kabid/sekretariat/staf)
+    Route::get('disposisi', [DisposisiController::class, 'inbox'])->name('disposisi.inbox');
+    Route::get('surat-masuk/{suratMasuk}/disposisi', [DisposisiController::class, 'show'])->name('disposisi.show');
+    Route::post('surat-masuk/{suratMasuk}/disposisi', [DisposisiController::class, 'store'])->name('disposisi.store');
+    Route::post('disposisi/{disposisi}/forward', [DisposisiController::class, 'forward'])->name('disposisi.forward');
+    Route::patch('disposisi/{disposisi}/status', [DisposisiController::class, 'updateStatus'])->name('disposisi.status');
 });

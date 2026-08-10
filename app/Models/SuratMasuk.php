@@ -45,6 +45,29 @@ class SuratMasuk extends Model
         return $this->hasMany(Disposisi::class, 'surat_masuk_id');
     }
 
+    /**
+     * Recompute status_disposisi based on the state of the whole disposisi tree.
+     * - 'baru'     : belum ada disposisi sama sekali
+     * - 'selesai'  : semua disposisi (di semua cabang) sudah selesai/ditolak
+     * - 'diproses' : sudah ada disposisi tapi masih ada yang berjalan
+     */
+    public function refreshStatusDisposisi(): void
+    {
+        $all = $this->disposisi()->get();
+
+        if ($all->isEmpty()) {
+            $status = 'baru';
+        } elseif ($all->every(fn (Disposisi $d) => in_array($d->status, ['selesai', 'ditolak']))) {
+            $status = 'selesai';
+        } else {
+            $status = 'diproses';
+        }
+
+        if ($status !== $this->status_disposisi) {
+            $this->update(['status_disposisi' => $status]);
+        }
+    }
+
     public function waNotifications(): HasMany
     {
         return $this->hasMany(WaNotification::class, 'surat_masuk_id');
