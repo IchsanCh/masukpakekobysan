@@ -24,25 +24,23 @@ class DashboardController extends Controller
             $disposisiSelesai = Disposisi::where('status', 'selesai')->count();
         } else {
             // Bidang only sees disposisi assigned to them
-            $unitIds = $user->units->pluck('id');
-
-            $suratMasuk = SuratMasuk::whereHas('disposisi', function ($q) use ($user, $unitIds) {
+            $suratMasuk = SuratMasuk::whereHas('disposisi', function ($q) use ($user) {
                 $q->where('kepada_user_id', $user->id)
-                  ->orWhereIn('unit_id', $unitIds);
+                  ->orWhere('unit_id', $user->unit_id);
             })->count();
 
             $suratKeluar = SuratKeluar::where('dibuat_oleh', $user->id)->count();
 
             $disposisiPending = Disposisi::where('status', 'menunggu')
-                ->where(function ($q) use ($user, $unitIds) {
+                ->where(function ($q) use ($user) {
                     $q->where('kepada_user_id', $user->id)
-                      ->orWhereIn('unit_id', $unitIds);
+                      ->orWhere('unit_id', $user->unit_id);
                 })->count();
 
             $disposisiSelesai = Disposisi::where('status', 'selesai')
-                ->where(function ($q) use ($user, $unitIds) {
+                ->where(function ($q) use ($user) {
                     $q->where('kepada_user_id', $user->id)
-                      ->orWhereIn('unit_id', $unitIds);
+                      ->orWhere('unit_id', $user->unit_id);
                 })->count();
         }
 
@@ -50,7 +48,7 @@ class DashboardController extends Controller
         $recentDisposisi = Disposisi::with(['suratMasuk', 'dariUser'])
             ->where(function ($q) use ($user) {
                 $q->where('kepada_user_id', $user->id)
-                  ->orWhereIn('unit_id', $user->units->pluck('id'));
+                  ->orWhere('unit_id', $user->unit_id);
             })
             ->latest()
             ->take(5)

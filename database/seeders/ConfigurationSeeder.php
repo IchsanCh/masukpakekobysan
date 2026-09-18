@@ -17,12 +17,6 @@ class ConfigurationSeeder extends Seeder
                 'group' => 'fonnte',
                 'description' => 'API token dari Fonnte untuk pengiriman WhatsApp',
             ],
-            [
-                'key' => 'fonnte_sender',
-                'value' => '',
-                'group' => 'fonnte',
-                'description' => 'Nomor WhatsApp pengirim (terdaftar di Fonnte)',
-            ],
 
             // WA Templates
             [

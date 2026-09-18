@@ -39,7 +39,7 @@
             </a>
 
             @php $active = request()->routeIs('surat-keluar.*'); @endphp
-            <a href="#"
+            <a href="{{ route('surat-keluar.index') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                       {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                 <x-icon name="paper-airplane" :solid="$active" class="w-[18px] h-[18px]" />
@@ -55,7 +55,7 @@
             </a>
 
             @php $active = request()->routeIs('tindak-lanjut.*'); @endphp
-            <a href="#"
+            <a href="{{ route('tindak-lanjut.index') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                       {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                 <x-icon name="check-circle" :solid="$active" class="w-[18px] h-[18px]" />
@@ -95,10 +95,28 @@
                     class="px-3 pt-5 pb-1.5 text-[10px] font-semibold text-[var(--color-slate-400)] uppercase tracking-wider">
                     Pengaturan</p>
 
-                <a href="#"
-                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)] transition-all duration-150">
-                    <x-icon name="cog-6-tooth" class="w-[18px] h-[18px]" />
+                @php $active = request()->routeIs('configuration.*'); @endphp
+                <a href="{{ route('configuration.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                          {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
+                    <x-icon name="cog-6-tooth" :solid="$active" class="w-[18px] h-[18px]" />
                     Konfigurasi
+                </a>
+
+                @php $active = request()->routeIs('notifikasi.*'); @endphp
+                <a href="{{ route('notifikasi.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                          {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
+                    <x-icon name="bell" :solid="$active" class="w-[18px] h-[18px]" />
+                    Log Notifikasi
+                </a>
+
+                @php $active = request()->routeIs('arsip.*'); @endphp
+                <a href="{{ route('arsip.index') }}"
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                          {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
+                    <x-icon name="eye" :solid="$active" class="w-[18px] h-[18px]" />
+                    Nasib Akhir Arsip
                 </a>
             @endif
         </nav>
@@ -113,7 +131,7 @@
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-[var(--color-navy-900)] truncate">{{ auth()->user()->name }}</p>
                     <p class="text-[10px] text-[var(--color-slate-400)] truncate">
-                        {{ auth()->user()->jabatan_struktural ?? '-' }}</p>
+                        {{ ucfirst(auth()->user()->peran) }}</p>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

@@ -28,7 +28,7 @@ return new class () extends Migration {
                   ->nullOnDelete();
             $table->unsignedInteger('retensi_tahun')->default(2);
             $table->enum('status_disposisi', ['baru', 'diproses', 'selesai'])->default('baru');
-            $table->enum('status_arsip', ['aktif', 'inaktif', 'musnah', 'permanen'])->default('aktif');
+            $table->enum('status_arsip', ['aktif', 'inaktif', 'perlu_ditinjau', 'musnah', 'permanen'])->default('aktif');
             $table->enum('nasib_akhir', ['musnah', 'permanen', 'dinilai_kembali'])->nullable();
 
             // Relasi ke user yang input

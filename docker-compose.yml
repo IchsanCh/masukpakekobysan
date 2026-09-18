@@ -1,0 +1,78 @@
+services:
+  masukpakeko:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: masukpakeko-app:latest
+    container_name: masukpakeko-app
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    environment:
+      - CONTAINER_ROLE=app
+    expose:
+      - "9000"
+    networks:
+      - nginx-proxy
+    restart: unless-stopped
+    mem_limit: 2g
+
+  scheduler:
+    image: masukpakeko-app:latest
+    container_name: masukpakeko-scheduler
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    environment:
+      - CONTAINER_ROLE=scheduler
+    command:
+      [
+        "sh",
+        "-c",
+        "while true; do php artisan schedule:run --verbose --no-interaction; sleep 60; done",
+      ]
+    depends_on:
+      - masukpakeko
+    networks:
+      - nginx-proxy
+    restart: unless-stopped
+    mem_limit: 512m
+
+  queue:
+    image: masukpakeko-app:latest
+    container_name: masukpakeko-queue
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    environment:
+      - CONTAINER_ROLE=queue
+    command: ["php", "artisan", "queue:work", "--tries=3", "--sleep=3"]
+    depends_on:
+      - masukpakeko
+    networks:
+      - nginx-proxy
+    restart: unless-stopped
+    mem_limit: 512m
+
+  webmasukpakeko:
+    image: nginx:alpine
+    container_name: masukpakeko-nginx
+    depends_on:
+      - masukpakeko
+    volumes:
+      - ./:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    environment:
+      - VIRTUAL_HOST=masukpakeko.lotusaja.com
+      - LETSENCRYPT_HOST=masukpakeko.lotusaja.com
+      - LETSENCRYPT_EMAIL=info.lotusaja@gmail.com
+    expose:
+      - "80"
+    networks:
+      - nginx-proxy
+    restart: unless-stopped
+    mem_limit: 1g
+
+networks:
+  nginx-proxy:
+    external: true

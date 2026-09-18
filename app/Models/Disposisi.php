@@ -12,6 +12,7 @@ class Disposisi extends Model
         'surat_masuk_id',
         'parent_id',
         'dari_user_id',
+        'diinput_oleh_id',
         'tipe_tujuan',
         'unit_id',
         'kepada_user_id',
@@ -24,7 +25,7 @@ class Disposisi extends Model
     ];
 
     protected $casts = [
-        'batas_waktu' => 'date',
+        'batas_waktu' => 'datetime',
         'dibaca_at' => 'datetime',
         'diselesaikan_at' => 'datetime',
     ];
@@ -50,12 +51,24 @@ class Disposisi extends Model
      */
     public function childrenRecursive(): HasMany
     {
-        return $this->children()->with(['childrenRecursive', 'dariUser', 'unit', 'kepadaUser']);
+        return $this->children()->with([
+            'childrenRecursive', 'dariUser', 'diinputOleh', 'unit', 'kepadaUser',
+            'tindakLanjut', 'tindakLanjut.user', 'tindakLanjut.lampiran',
+        ]);
     }
 
     public function dariUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'dari_user_id');
+    }
+
+    /**
+     * Agendaris yang benar-benar menginput disposisi ini kalau ini hasil
+     * "atas nama pimpinan" (null kalau bukan hasil proxy).
+     */
+    public function diinputOleh(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'diinput_oleh_id');
     }
 
     public function kepadaUser(): BelongsTo
@@ -89,11 +102,34 @@ class Disposisi extends Model
             return $this->kepada_user_id === $user->id;
         }
 
-        return $this->unit_id !== null && $user->units()->where('units.id', $this->unit_id)->exists();
+        return $this->unit_id !== null && $user->unit_id === $this->unit_id;
     }
 
     public function isTerminal(): bool
     {
         return in_array($this->status, ['selesai', 'ditolak']);
+    }
+
+    /**
+     * Kalau $user adalah agendaris dan disposisi ini ditujukan (personal) ke
+     * salah satu pimpinan seunit dia, atau ditujukan ke unit tempat salah satu
+     * pimpinan seunit dia berada, kembalikan pimpinan yang bisa diwakili itu.
+     * Null kalau $user tidak berhak bertindak sebagai proxy di sini.
+     */
+    public function pimpinanDiwakiliOleh(User $user): ?User
+    {
+        if (! $user->canMewakiliPimpinan()) {
+            return null;
+        }
+
+        $pimpinanSeunit = $user->pimpinanSeunit();
+
+        if ($this->tipe_tujuan === 'personal') {
+            return $pimpinanSeunit->firstWhere('id', $this->kepada_user_id);
+        }
+
+        // pimpinanSeunit() sudah pasti semuanya di unit yang sama dengan $user,
+        // jadi tinggal cek disposisi ini memang ditujukan ke unit itu.
+        return $this->unit_id === $user->unit_id ? $pimpinanSeunit->first() : null;
     }
 }

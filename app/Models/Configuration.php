@@ -19,11 +19,15 @@ class Configuration extends Model
      */
     public static function getValue(string $key, mixed $default = null): mixed
     {
-        $config = Cache::rememberForever("config.{$key}", function () use ($key) {
-            return static::where('key', $key)->first();
+        // Cache nilai string-nya doang (bukan seluruh model Eloquent) — objek model
+        // yang di-cache rawan gagal unserialize ("incomplete object") kalau class
+        // autoloading-nya sempat berubah (misal abis composer update), sementara
+        // string mentah selalu aman di-serialize/unserialize.
+        $value = Cache::rememberForever("config.{$key}", function () use ($key) {
+            return static::where('key', $key)->value('value');
         });
 
-        return $config?->value ?? $default;
+        return $value ?? $default;
     }
 
     /**

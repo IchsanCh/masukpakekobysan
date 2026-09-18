@@ -12,7 +12,6 @@ class TindakLanjut extends Model
         'disposisi_id',
         'user_id',
         'keterangan',
-        'status',
     ];
 
     public function disposisi(): BelongsTo

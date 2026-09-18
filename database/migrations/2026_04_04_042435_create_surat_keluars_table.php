@@ -13,6 +13,9 @@ return new class () extends Migration {
         Schema::create('surat_keluars', function (Blueprint $table) {
             $table->id();
             $table->string('nomor_surat', 255)->unique();
+            // Angka urut internal buat auto-increment per tahun (dari tanggal_surat),
+            // terpisah dari nomor_surat yang teksnya bebas diedit user.
+            $table->unsignedInteger('nomor_urut')->nullable();
             $table->date('tanggal_surat');
             $table->text('isi_ringkasan');
             $table->string('kepada');
@@ -26,7 +29,7 @@ return new class () extends Migration {
                   ->constrained('referensi_retensis')
                   ->nullOnDelete();
             $table->unsignedInteger('retensi_tahun')->default(2);
-            $table->enum('status_arsip', ['aktif', 'inaktif', 'musnah', 'permanen'])->default('aktif');
+            $table->enum('status_arsip', ['aktif', 'inaktif', 'perlu_ditinjau', 'musnah', 'permanen'])->default('aktif');
             $table->enum('nasib_akhir', ['musnah', 'permanen', 'dinilai_kembali'])->nullable();
 
             // Relasi ke user yang input

@@ -27,7 +27,10 @@ return new class () extends Migration {
             $table->foreignId('dari_user_id')
                   ->constrained('users')
                   ->cascadeOnDelete();
-
+            $table->foreignId('diinput_oleh_id')
+                  ->nullable()
+                  ->constrained('users')
+                  ->nullOnDelete();
             // Tujuan
             $table->enum('tipe_tujuan', ['unit', 'personal']);
             $table->foreignId('unit_id')
@@ -40,7 +43,7 @@ return new class () extends Migration {
                   ->nullOnDelete();
 
             $table->text('instruksi');
-            $table->date('batas_waktu')->nullable();
+            $table->dateTime('batas_waktu')->nullable();
             $table->enum('status', ['menunggu', 'diterima', 'diproses', 'selesai', 'ditolak'])->default('menunggu');
             $table->text('alasan_ditolak')->nullable();
             $table->timestamp('dibaca_at')->nullable();

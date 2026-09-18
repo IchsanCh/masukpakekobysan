@@ -19,7 +19,6 @@ return new class () extends Migration {
                   ->constrained('users')
                   ->cascadeOnDelete();
             $table->text('keterangan');
-            $table->enum('status', ['draft', 'terkirim'])->default('draft');
             $table->timestamps();
         });
     }

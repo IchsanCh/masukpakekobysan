@@ -17,6 +17,15 @@ return new class () extends Migration {
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
+
+        // Satu user cuma punya satu unit & satu peran (gak ada rangkap jabatan),
+        // jadi ditaruh langsung di sini sebagai kolom, bukan pivot table.
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreignId('unit_id')->nullable()->after('id')->constrained('units')->nullOnDelete();
+            $table->enum('peran', ['agendaris', 'pimpinan', 'sekretariat', 'kabid', 'staf'])
+                  ->default('staf')
+                  ->after('unit_id');
+        });
     }
 
     /**
@@ -24,6 +33,11 @@ return new class () extends Migration {
      */
     public function down(): void
     {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('unit_id');
+            $table->dropColumn('peran');
+        });
+
         Schema::dropIfExists('units');
     }
 };

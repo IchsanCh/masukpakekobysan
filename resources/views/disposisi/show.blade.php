@@ -84,6 +84,7 @@
                     'units' => $units,
                     'usersForPersonal' => $usersForPersonal,
                     'submitLabel' => 'Kirim Disposisi',
+                    'pimpinanOptions' => $pimpinanUntukRoot->isNotEmpty() ? $pimpinanUntukRoot : null,
                 ])
             </div>
         @endif

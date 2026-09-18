@@ -1,12 +1,12 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\auth;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class confirm-delete extends Component
+class ButtonSubmit extends Component
 {
     /**
      * Create a new component instance.
@@ -21,6 +21,6 @@ class confirm-delete extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.confirm-delete');
+        return view('components.auth.button-submit');
     }
 }

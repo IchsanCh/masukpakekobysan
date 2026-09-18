@@ -11,25 +11,31 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Buat user admin (agendaris)
-        $admin = User::create([
+        $sekretariat = Unit::where('nama_unit', 'Sekretariat')->first();
+
+        // Buat user admin (agendaris) di unit Sekretariat
+        User::create([
             'name' => 'Admin Agendaris',
             'username' => 'admin',
             'email' => 'ichsanmuhammed01@gmail.com',
             'password' => Hash::make('password'),
             'no_wa' => '08123456789',
-            'jabatan_struktural' => 'Agendaris',
+            'unit_id' => $sekretariat?->id,
+            'peran' => 'agendaris',
             'is_active' => true,
         ]);
 
-        // Assign ke unit Sekretariat sebagai agendaris
-        $sekretariat = Unit::where('nama_unit', 'Sekretariat')->first();
-
-        if ($sekretariat) {
-            $admin->units()->attach($sekretariat->id, [
-                'peran' => 'agendaris',
-                'is_primary' => true,
-            ]);
-        }
+        // Buat user pimpinan di unit yang sama, supaya agendaris di atas
+        // punya pimpinan yang bisa diwakili saat membuat/meneruskan disposisi.
+        User::create([
+            'name' => 'Kepala Dinas',
+            'username' => 'pimpinan',
+            'email' => 'pimpinan@example.com',
+            'password' => Hash::make('password'),
+            'no_wa' => '08123456780',
+            'unit_id' => $sekretariat?->id,
+            'peran' => 'pimpinan',
+            'is_active' => true,
+        ]);
     }
 }

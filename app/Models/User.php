@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -14,8 +14,6 @@ use Illuminate\Notifications\Notifiable;
  * @method bool canDisposisi()
  * @method bool hasRole(string $role)
  * @method bool hasAnyRole(array $roles)
- * @method \App\Models\Unit|null primaryUnit()
- * @method array roles()
  */
 
 class User extends Authenticatable
@@ -30,7 +28,8 @@ class User extends Authenticatable
         'email',
         'password',
         'no_wa',
-        'jabatan_struktural',
+        'unit_id',
+        'peran',
         'is_active',
     ];
 
@@ -48,35 +47,17 @@ class User extends Authenticatable
         ];
     }
 
-    public function units(): BelongsToMany
+    public function unit(): BelongsTo
     {
-        return $this->belongsToMany(Unit::class, 'unit_user')
-                    ->withPivot('peran', 'is_primary')
-                    ->withTimestamps();
+        return $this->belongsTo(Unit::class);
     }
 
     /**
-     * Get the user's primary unit.
-     */
-    public function primaryUnit(): ?Unit
-    {
-        return $this->units()->wherePivot('is_primary', true)->first();
-    }
-
-    /**
-     * Get all roles across all units.
-     */
-    public function roles(): array
-    {
-        return $this->units->pluck('pivot.peran')->unique()->values()->toArray();
-    }
-
-    /**
-     * Check if user has a specific role in any unit.
+     * Check if user has a specific role.
      */
     public function hasRole(string $role): bool
     {
-        return $this->units()->wherePivot('peran', $role)->exists();
+        return $this->peran === $role;
     }
 
     /**
@@ -84,7 +65,7 @@ class User extends Authenticatable
      */
     public function hasAnyRole(array $roles): bool
     {
-        return $this->units()->wherePivotIn('peran', $roles)->exists();
+        return in_array($this->peran, $roles, true);
     }
 
     /**
@@ -100,7 +81,31 @@ class User extends Authenticatable
      */
     public function canDisposisi(): bool
     {
-        return $this->hasAnyRole(['pimpinan', 'sekretariat', 'kabid']);
+        return $this->hasAnyRole(['pimpinan', 'sekretariat', 'kabid', 'agendaris']);
+    }
+
+    /**
+     * True kalau user ini agendaris — satu-satunya peran yang boleh membuat/meneruskan
+     * disposisi "atas nama" pimpinan. Ini kemampuan OPSIONAL: agendaris tetap bisa
+     * bertindak atas nama dirinya sendiri kalau mau, ini cuma pilihan tambahan.
+     * Kabid/sekretariat/pimpinan tidak pernah dapat kemampuan ini.
+     */
+    public function canMewakiliPimpinan(): bool
+    {
+        return $this->hasRole('agendaris');
+    }
+
+    /**
+     * Daftar pimpinan yang satu unit dengan user ini. Dipakai agendaris untuk
+     * memilih "atas nama siapa" saat membuat/meneruskan disposisi.
+     */
+    public function pimpinanSeunit(): \Illuminate\Support\Collection
+    {
+        return self::where('unit_id', $this->unit_id)
+            ->where('peran', 'pimpinan')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
     }
 
     public function suratMasukDibuat(): HasMany

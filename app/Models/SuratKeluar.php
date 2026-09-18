@@ -9,6 +9,7 @@ class SuratKeluar extends Model
 {
     protected $fillable = [
         'nomor_surat',
+        'nomor_urut',
         'tanggal_surat',
         'isi_ringkasan',
         'kepada',

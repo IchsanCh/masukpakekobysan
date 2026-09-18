@@ -116,12 +116,16 @@
                                     {{ $d->tipe_tujuan === 'unit' ? $d->unit->nama_unit ?? '—' : $d->kepadaUser->name ?? '—' }}
                                 @else
                                     {{ $d->dariUser->name }}
+                                    @if ($d->diinput_oleh_id)
+                                        <span class="text-[var(--color-slate-400)]"
+                                            title="Diinput oleh {{ $d->diinputOleh->name }} (atas nama pimpinan)">*</span>
+                                    @endif
                                 @endif
                             </td>
                             <td class="px-5 py-3.5 text-sm text-[var(--color-slate-500)] truncate max-w-xs">
                                 {{ \Illuminate\Support\Str::limit($d->instruksi, 50) }}</td>
                             <td class="px-5 py-3.5 text-sm text-center text-[var(--color-slate-500)]">
-                                {{ $d->batas_waktu?->format('d M Y') ?? '-' }}
+                                {{ $d->batas_waktu?->format('d M Y H:i') ?? '-' }}
                             </td>
                             <td class="px-5 py-3.5 text-center">
                                 <span

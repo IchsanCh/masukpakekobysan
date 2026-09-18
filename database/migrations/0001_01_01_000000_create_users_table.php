@@ -17,7 +17,6 @@ return new class () extends Migration {
             $table->string('email')->unique()->nullable();
             $table->string('password');
             $table->string('no_wa', 20)->nullable();
-            $table->string('jabatan_struktural')->nullable();
             $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();

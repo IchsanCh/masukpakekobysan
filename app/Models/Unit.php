@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Unit extends Model
@@ -18,11 +17,9 @@ class Unit extends Model
         'is_active' => 'boolean',
     ];
 
-    public function users(): BelongsToMany
+    public function users(): HasMany
     {
-        return $this->belongsToMany(User::class, 'unit_user')
-                    ->withPivot('peran', 'is_primary')
-                    ->withTimestamps();
+        return $this->hasMany(User::class);
     }
 
     public function disposisi(): HasMany

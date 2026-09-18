@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ReferensiRetensi;
 use App\Models\SuratMasuk;
+use App\Services\WhatsAppNotifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -49,7 +50,7 @@ class SuratMasukController extends Controller
         return view('surat-masuk.create', compact('retensis'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, WhatsAppNotifier $notifier): RedirectResponse
     {
         $validated = $this->validateRequest($request);
 
@@ -61,7 +62,9 @@ class SuratMasukController extends Controller
         $validated['status_disposisi'] = 'baru';
         $validated['status_arsip'] = 'aktif';
 
-        SuratMasuk::create($validated);
+        $suratMasuk = SuratMasuk::create($validated);
+
+        $notifier->notifySuratMasukBaru($suratMasuk);
 
         return redirect()->route('surat-masuk.index')
             ->with('success', 'Surat masuk berhasil ditambahkan.');
