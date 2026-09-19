@@ -42,9 +42,6 @@ Incoming Mail
       │
       ▼
     Archive
-      │
-      ▼
-   Retention
 ```
 
 ## Installation
