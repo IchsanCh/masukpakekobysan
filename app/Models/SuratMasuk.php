@@ -48,7 +48,7 @@ class SuratMasuk extends Model
     /**
      * Recompute status_disposisi based on the state of the whole disposisi tree.
      * - 'baru'     : belum ada disposisi sama sekali
-     * - 'selesai'  : semua disposisi (di semua cabang) sudah selesai/ditolak
+     * - 'selesai'  : semua disposisi (di semua cabang) sudah selesai
      * - 'diproses' : sudah ada disposisi tapi masih ada yang berjalan
      */
     public function refreshStatusDisposisi(): void
@@ -57,7 +57,7 @@ class SuratMasuk extends Model
 
         if ($all->isEmpty()) {
             $status = 'baru';
-        } elseif ($all->every(fn (Disposisi $d) => in_array($d->status, ['selesai', 'ditolak']))) {
+        } elseif ($all->every(fn (Disposisi $d) => $d->status === 'selesai')) {
             $status = 'selesai';
         } else {
             $status = 'diproses';

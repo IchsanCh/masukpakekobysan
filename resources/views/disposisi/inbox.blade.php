@@ -34,7 +34,6 @@
                     <option value="diterima" @selected(request('status') === 'diterima')>Diterima</option>
                     <option value="diproses" @selected(request('status') === 'diproses')>Diproses</option>
                     <option value="selesai" @selected(request('status') === 'selesai')>Selesai</option>
-                    <option value="ditolak" @selected(request('status') === 'ditolak')>Ditolak</option>
                 </select>
             </form>
         </div>
@@ -88,11 +87,6 @@
                                     'text' => 'text-[var(--color-success)]',
                                     'dot' => 'bg-[var(--color-success)]',
                                 ],
-                                'ditolak' => [
-                                    'bg' => 'bg-[var(--color-danger)]/10',
-                                    'text' => 'text-[var(--color-danger)]',
-                                    'dot' => 'bg-[var(--color-danger)]',
-                                ],
                             ];
                             $sc = $statusColors[$d->status];
                             $statusLabel = [
@@ -100,7 +94,6 @@
                                 'diterima' => 'Diterima',
                                 'diproses' => 'Diproses',
                                 'selesai' => 'Selesai',
-                                'ditolak' => 'Ditolak',
                             ][$d->status];
                         @endphp
                         <tr

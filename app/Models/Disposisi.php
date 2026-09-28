@@ -19,7 +19,6 @@ class Disposisi extends Model
         'instruksi',
         'batas_waktu',
         'status',
-        'alasan_ditolak',
         'dibaca_at',
         'diselesaikan_at',
     ];
@@ -107,7 +106,7 @@ class Disposisi extends Model
 
     public function isTerminal(): bool
     {
-        return in_array($this->status, ['selesai', 'ditolak']);
+        return $this->status === 'selesai';
     }
 
     /**

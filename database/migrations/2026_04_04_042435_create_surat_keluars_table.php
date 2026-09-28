@@ -29,7 +29,7 @@ return new class () extends Migration {
                   ->constrained('referensi_retensis')
                   ->nullOnDelete();
             $table->unsignedInteger('retensi_tahun')->default(2);
-            $table->enum('status_arsip', ['aktif', 'inaktif', 'perlu_ditinjau', 'musnah', 'permanen'])->default('aktif');
+            $table->enum('status_arsip', ['aktif', 'inaktif', 'perlu_ditinjau', 'menunggu_musnah', 'musnah', 'permanen'])->default('aktif');
             $table->enum('nasib_akhir', ['musnah', 'permanen', 'dinilai_kembali'])->nullable();
 
             // Relasi ke user yang input

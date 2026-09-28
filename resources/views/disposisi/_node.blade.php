@@ -2,6 +2,10 @@
     $depth = $depth ?? 0;
     $canActOnThis = $disposisi->canBeActedBy(auth()->user());
     $pimpinanDiwakili = $disposisi->pimpinanDiwakiliOleh(auth()->user());
+    // Siapa aja yang bisa ngelakuin SESUATU di sini (terima/proses/selesai/tindak lanjut) —
+    // beda dari $canForwardThis di bawah yang khusus buat tombol "Teruskan" doang
+    // (staf sengaja gak boleh forward, tapi tetep boleh act on this).
+    $canDoAnything = $canActOnThis || $pimpinanDiwakili !== null;
     $canForwardThis = ($canActOnThis && auth()->user()->canDisposisi()) || $pimpinanDiwakili !== null;
     $statusColors = [
         'menunggu' => [
@@ -24,11 +28,6 @@
             'text' => 'text-[var(--color-success)]',
             'dot' => 'bg-[var(--color-success)]',
         ],
-        'ditolak' => [
-            'bg' => 'bg-[var(--color-danger)]/10',
-            'text' => 'text-[var(--color-danger)]',
-            'dot' => 'bg-[var(--color-danger)]',
-        ],
     ];
     $sc = $statusColors[$disposisi->status];
     $statusLabel = [
@@ -36,7 +35,6 @@
         'diterima' => 'Diterima',
         'diproses' => 'Diproses',
         'selesai' => 'Selesai',
-        'ditolak' => 'Ditolak',
     ][$disposisi->status];
     $isOverdue = $disposisi->batas_waktu && $disposisi->batas_waktu->isPast() && !$disposisi->isTerminal();
 @endphp
@@ -84,12 +82,6 @@
             @endif
         </div>
 
-        @if ($disposisi->status === 'ditolak' && $disposisi->alasan_ditolak)
-            <div class="mt-2.5 px-3 py-2 rounded-lg bg-[var(--color-danger)]/5 text-xs text-[var(--color-danger)]">
-                <span class="font-medium">Alasan ditolak:</span> {{ $disposisi->alasan_ditolak }}
-            </div>
-        @endif
-
         @if ($disposisi->tindakLanjut->isNotEmpty())
             <div class="mt-3 pt-3 border-t border-[var(--color-slate-100)] space-y-2.5">
                 @foreach ($disposisi->tindakLanjut as $tl)
@@ -114,8 +106,8 @@
             </div>
         @endif
 
-        @if ($canForwardThis && !$disposisi->isTerminal())
-            <div x-data="{ showForward: false, showReject: false, showTindakLanjut: false }" class="mt-3 pt-3 border-t border-[var(--color-slate-100)]">
+        @if ($canDoAnything && !$disposisi->isTerminal())
+            <div x-data="{ showForward: false, showTindakLanjut: false }" class="mt-3 pt-3 border-t border-[var(--color-slate-100)]">
                 <div class="flex flex-wrap items-center gap-2">
                     @php $nextStatuses = ['menunggu' => 'diterima', 'diterima' => 'diproses', 'diproses' => 'selesai'][$disposisi->status] ?? null; @endphp
                     @php $nextLabel = ['diterima' => 'Tandai Diterima', 'diproses' => 'Proses', 'selesai' => 'Tandai Selesai'][$nextStatuses] ?? null; @endphp
@@ -132,21 +124,16 @@
                     @endif
 
                     @if ($canActOnThis)
-                        <button type="button" @click="showTindakLanjut = !showTindakLanjut; showForward = false; showReject = false"
+                        <button type="button" @click="showTindakLanjut = !showTindakLanjut; showForward = false"
                             class="px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--color-slate-200)] text-[var(--color-slate-600)] hover:bg-[var(--color-slate-50)] transition-colors">
                             Tindak Lanjut
                         </button>
                     @endif
 
-                    <button type="button" @click="showForward = !showForward; showReject = false; showTindakLanjut = false"
-                        class="px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--color-slate-200)] text-[var(--color-slate-600)] hover:bg-[var(--color-slate-50)] transition-colors">
-                        Teruskan Disposisi
-                    </button>
-
-                    @if ($canActOnThis)
-                        <button type="button" @click="showReject = !showReject; showForward = false; showTindakLanjut = false"
-                            class="px-3 py-1.5 rounded-lg text-xs font-medium text-[var(--color-danger)] hover:bg-red-50 transition-colors">
-                            Tolak
+                    @if ($canForwardThis)
+                        <button type="button" @click="showForward = !showForward; showTindakLanjut = false"
+                            class="px-3 py-1.5 rounded-lg text-xs font-medium border border-[var(--color-slate-200)] text-[var(--color-slate-600)] hover:bg-[var(--color-slate-50)] transition-colors">
+                            Teruskan Disposisi
                         </button>
                     @endif
                 </div>
@@ -188,32 +175,15 @@
                     </div>
                 @endif
 
-                <div x-show="showForward" x-cloak class="mt-3 p-3 rounded-xl bg-[var(--color-slate-50)]">
-                    @include('disposisi._target-form', [
-                        'actionUrl' => route('disposisi.forward', $disposisi),
-                        'units' => $units,
-                        'usersForPersonal' => $usersForPersonal,
-                        'submitLabel' => 'Teruskan Disposisi',
-                        'pimpinanTetap' => $pimpinanDiwakili,
-                    ])
-                </div>
-
-                @if ($canActOnThis)
-                    <div x-show="showReject" x-cloak class="mt-3 p-3 rounded-xl bg-red-50/50">
-                        <form method="POST" action="{{ route('disposisi.status', $disposisi) }}" x-data="{ submitting: false }"
-                            @submit="submitting = true">
-                            @csrf @method('PATCH')
-                            <input type="hidden" name="status" value="ditolak">
-                            <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Alasan Penolakan
-                                *</label>
-                            <textarea name="alasan_ditolak" rows="2" required
-                                class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[var(--color-slate-200)] focus:outline-none focus:border-[var(--color-danger)] focus:ring-2 focus:ring-[var(--color-danger)]/10 transition-all resize-none"></textarea>
-                            <button type="submit" :disabled="submitting"
-                                class="mt-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-[var(--color-danger)] shadow-sm disabled:opacity-60 inline-flex items-center gap-2">
-                                <span x-show="submitting" class="loading loading-spinner loading-xs"></span>
-                                <span x-text="submitting ? 'Mengirim...' : 'Konfirmasi Tolak'"></span>
-                            </button>
-                        </form>
+                @if ($canForwardThis)
+                    <div x-show="showForward" x-cloak class="mt-3 p-3 rounded-xl bg-[var(--color-slate-50)]">
+                        @include('disposisi._target-form', [
+                            'actionUrl' => route('disposisi.forward', $disposisi),
+                            'units' => $units,
+                            'usersForPersonal' => $usersForPersonal,
+                            'submitLabel' => 'Teruskan Disposisi',
+                            'pimpinanTetap' => $pimpinanDiwakili,
+                        ])
                     </div>
                 @endif
             </div>

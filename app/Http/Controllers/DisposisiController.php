@@ -17,11 +17,10 @@ class DisposisiController extends Controller
      * Status berikutnya yang valid dari status sekarang.
      */
     private const TRANSITIONS = [
-        'menunggu' => ['diterima', 'ditolak'],
-        'diterima' => ['diproses', 'ditolak'],
-        'diproses' => ['selesai', 'ditolak'],
+        'menunggu' => ['diterima'],
+        'diterima' => ['diproses'],
+        'diproses' => ['selesai'],
         'selesai' => [],
-        'ditolak' => [],
     ];
 
     /**
@@ -131,7 +130,7 @@ class DisposisiController extends Controller
             abort_unless($bertindakSebagai !== null, 403);
         }
 
-        abort_if($disposisi->isTerminal(), 422, 'Disposisi ini sudah selesai/ditolak, tidak bisa diteruskan lagi.');
+        abort_if($disposisi->isTerminal(), 422, 'Disposisi ini sudah selesai, tidak bisa diteruskan lagi.');
 
         $validated = $this->validateDisposisi($request);
 
@@ -157,7 +156,7 @@ class DisposisiController extends Controller
     }
 
     /**
-     * Ubah status disposisi (diterima / diproses / selesai / ditolak).
+     * Ubah status disposisi (diterima / diproses / selesai).
      */
     public function updateStatus(Request $request, Disposisi $disposisi, WhatsAppNotifier $notifier): RedirectResponse
     {
@@ -166,8 +165,7 @@ class DisposisiController extends Controller
         abort_unless($disposisi->canBeActedBy($user), 403);
 
         $validated = $request->validate([
-            'status' => 'required|in:diterima,diproses,selesai,ditolak',
-            'alasan_ditolak' => 'required_if:status,ditolak|nullable|string',
+            'status' => 'required|in:diterima,diproses,selesai',
         ]);
 
         $allowed = self::TRANSITIONS[$disposisi->status] ?? [];
@@ -183,16 +181,8 @@ class DisposisiController extends Controller
             $update['diselesaikan_at'] = now();
         }
 
-        if ($validated['status'] === 'ditolak') {
-            $update['alasan_ditolak'] = $validated['alasan_ditolak'];
-        }
-
         $disposisi->update($update);
         $disposisi->suratMasuk->refreshStatusDisposisi();
-
-        if ($validated['status'] === 'ditolak') {
-            $notifier->notifyDisposisiDitolak($disposisi, $user);
-        }
 
         if ($validated['status'] === 'selesai') {
             $notifier->notifyDisposisiSelesai($disposisi, $user, 'Ditandai selesai langsung tanpa catatan tindak lanjut.');

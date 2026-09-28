@@ -6,14 +6,12 @@ use App\Models\SuratKeluar;
 use App\Models\SuratMasuk;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class CekMasaRetensiArsip extends Command
 {
-    protected $signature = 'arsip:cek-retensi {--dry-run : Cuma tampilkan apa yang AKAN diproses, tanpa beneran eksekusi (musnah/permanen tetap ke-skip)}';
+    protected $signature = 'arsip:cek-retensi {--dry-run : Cuma tampilkan apa yang AKAN diproses, tanpa beneran eksekusi}';
 
-    protected $description = 'Cek surat masuk & keluar yang masa retensinya (masa_aktif + masa_inaktif) sudah habis, lalu proses nasib akhirnya';
+    protected $description = 'Cek surat masuk & keluar yang masa retensinya (masa_aktif + masa_inaktif) sudah habis, lalu tandai nasib akhirnya';
 
     public function handle(): int
     {
@@ -67,6 +65,12 @@ class CekMasaRetensiArsip extends Command
             });
     }
 
+    /**
+     * PENTING: 'musnah' di sini CUMA nandain status jadi 'menunggu_musnah' —
+     * gak langsung eksekusi hapus. Eksekusi beneran (file + DB + catat log)
+     * cuma terjadi lewat approval manual agendaris di halaman Arsip
+     * (lihat ArsipPemusnahanService::musnahkan()).
+     */
     private function prosesNasibAkhir(Model $surat, string $label, bool $dryRun): void
     {
         $nasibDefault = $surat->referensiRetensi->nasib_akhir_default;
@@ -78,29 +82,10 @@ class CekMasaRetensiArsip extends Command
         }
 
         match ($nasibDefault) {
-            'musnah' => self::musnahkan($surat, $label, 'otomatis oleh scheduler'),
+            'musnah' => $surat->update(['status_arsip' => 'menunggu_musnah']),
             'permanen' => $surat->update(['status_arsip' => 'permanen', 'nasib_akhir' => 'permanen']),
             'dinilai_kembali' => $surat->update(['status_arsip' => 'perlu_ditinjau']),
             default => null,
         };
-    }
-
-    /**
-     * Hapus file fisik (kalau ada) + record DB-nya permanen. Dipanggil juga dari
-     * ArsipController pas staf manual netapin "Musnah" buat surat perlu_ditinjau.
-     */
-    public static function musnahkan(Model $surat, string $label, string $konteks): void
-    {
-        if ($surat->file_surat) {
-            Storage::disk('public')->delete($surat->file_surat);
-        }
-
-        Log::info("Arsip dimusnahkan ({$konteks})", [
-            'tipe' => $label,
-            'id' => $surat->id,
-            'nomor_surat' => $surat->nomor_surat,
-        ]);
-
-        $surat->delete();
     }
 }

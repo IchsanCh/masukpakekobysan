@@ -171,7 +171,7 @@ class SuratKeluarController extends Controller
             'lampiran' => 'nullable|string|max:255',
             'referensi_retensi_id' => 'nullable|exists:referensi_retensis,id',
             'retensi_tahun' => 'required|integer|min:0',
-            'status_arsip' => 'required|in:aktif,inaktif,perlu_ditinjau,musnah,permanen',
+            'status_arsip' => 'required|in:aktif,inaktif,perlu_ditinjau,menunggu_musnah,musnah,permanen',
             'nasib_akhir' => 'nullable|in:musnah,permanen,dinilai_kembali',
             'file_surat' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:' . self::MAX_FILE_KB,
         ], [

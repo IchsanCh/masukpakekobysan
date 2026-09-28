@@ -79,28 +79,6 @@ class WhatsAppNotifier
     }
 
     /**
-     * Disposisi ditolak penerimanya -> kabari orang yang ngirim/assign disposisi
-     * ini (dariUser), bukan cuma nyimpen alasan_ditolak diam-diam.
-     */
-    public function notifyDisposisiDitolak(Disposisi $disposisi, User $penolak): void
-    {
-        $template = Configuration::waTemplate('disposisi_ditolak');
-
-        if (empty($template) || ! $disposisi->dariUser) {
-            return;
-        }
-
-        $pesan = $this->render($template, [
-            'nama' => $disposisi->dariUser->name,
-            'nomor_surat' => $disposisi->suratMasuk->nomor_surat ?? '-',
-            'penolak' => $penolak->name,
-            'alasan' => $disposisi->alasan_ditolak ?? '-',
-        ]);
-
-        $this->dispatch($disposisi->dariUser, 'disposisi_ditolak', $pesan, disposisiId: $disposisi->id);
-    }
-
-    /**
      * Disposisi ditandai selesai -> kabari orang yang ngirim/assign disposisi
      * ini (dariUser). Dipake dari 2 jalur: tindak lanjut staf yang otomatis
      * nyelesaiin (dari TindakLanjutController), ATAU klik manual tombol
@@ -136,7 +114,7 @@ class WhatsAppNotifier
     }
 
     /**
-     * Disposisi yang udah lewat batas_waktu dan belum selesai/ditolak -> kirim
+     * Disposisi yang udah lewat batas_waktu dan belum selesai -> kirim
      * pengingat ke target yang sama kayak notifyDisposisi() (personal/unit).
      * Dipanggil terjadwal harian lewat command `pengingat:deadline`.
      */

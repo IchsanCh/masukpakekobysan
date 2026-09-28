@@ -13,17 +13,17 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="min-h-screen bg-base-200" x-data>
-    <div class="drawer lg:drawer-open">
+<body class="h-screen overflow-hidden bg-base-200" x-data>
+    <div class="drawer lg:drawer-open h-full">
         <input id="sidebar-toggle" type="checkbox" class="drawer-toggle" />
 
         {{-- Main Content --}}
-        <div class="drawer-content flex flex-col">
+        <div class="drawer-content flex flex-col h-full">
             {{-- Top Navbar --}}
             <x-navbar />
 
             {{-- Page Content --}}
-            <main class="flex-1 p-6">
+            <main class="flex-1 overflow-y-auto p-6">
                 {{ $slot }}
             </main>
         </div>

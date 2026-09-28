@@ -21,10 +21,10 @@ class TindakLanjutController extends Controller
     {
         $user = $request->user();
 
-        // Disposisi aktif (belum selesai/ditolak) yang ditujukan langsung ke user ini —
+        // Disposisi aktif (belum selesai) yang ditujukan langsung ke user ini —
         // sama persis kriteria canBeActedBy(), biar konsisten sama yang bisa ditindaklanjuti.
         $pending = Disposisi::with(['suratMasuk', 'dariUser', 'unit', 'kepadaUser'])
-            ->whereNotIn('status', ['selesai', 'ditolak'])
+            ->whereNotIn('status', ['selesai'])
             ->where(function ($q) use ($user) {
                 $q->where('kepada_user_id', $user->id)
                   ->orWhere(function ($q2) use ($user) {
@@ -51,7 +51,7 @@ class TindakLanjutController extends Controller
         // Cuma penerima langsung disposisi ini yang boleh nulis tindak lanjut
         // (gak ada jalur "atas nama pimpinan" di sini, beda dari forward()).
         abort_unless($disposisi->canBeActedBy($user), 403);
-        abort_if($disposisi->isTerminal(), 422, 'Disposisi ini sudah selesai/ditolak, tidak bisa ditambah tindak lanjut lagi.');
+        abort_if($disposisi->isTerminal(), 422, 'Disposisi ini sudah selesai, tidak bisa ditambah tindak lanjut lagi.');
 
         $validated = $request->validate([
             'keterangan' => 'required|string',

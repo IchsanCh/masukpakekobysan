@@ -25,7 +25,7 @@
                     class="px-3 py-2 text-sm rounded-xl border border-[var(--color-slate-200)] bg-white text-[var(--color-slate-600)]
                            focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all">
                     <option value="">Semua Tipe</option>
-                    @foreach (['surat_masuk_baru' => 'Surat Masuk Baru', 'disposisi_masuk' => 'Disposisi Masuk', 'sub_disposisi' => 'Sub-Disposisi', 'tindaklanjut_selesai' => 'Tindak Lanjut Selesai', 'pengingat_deadline' => 'Pengingat Deadline', 'disposisi_ditolak' => 'Disposisi Ditolak'] as $value => $label)
+                    @foreach (['surat_masuk_baru' => 'Surat Masuk Baru', 'disposisi_masuk' => 'Disposisi Masuk', 'sub_disposisi' => 'Sub-Disposisi', 'tindaklanjut_selesai' => 'Tindak Lanjut Selesai', 'pengingat_deadline' => 'Pengingat Deadline'] as $value => $label)
                         <option value="{{ $value }}" @selected(request('tipe') === $value)>{{ $label }}</option>
                     @endforeach
                 </select>
@@ -80,7 +80,6 @@
                                 'sub_disposisi' => 'Sub-Disposisi',
                                 'tindaklanjut_selesai' => 'Tindak Lanjut Selesai',
                                 'pengingat_deadline' => 'Pengingat Deadline',
-                                'disposisi_ditolak' => 'Disposisi Ditolak',
                             ][$n->tipe] ?? $n->tipe;
 
                             $suratMasukIdTerkait = $n->surat_masuk_id ?? $n->disposisi?->surat_masuk_id;

@@ -47,10 +47,6 @@
                                         @case('selesai')
                                             <span class="badge badge-success badge-sm">Selesai</span>
                                         @break
-
-                                        @case('ditolak')
-                                            <span class="badge badge-error badge-sm">Ditolak</span>
-                                        @break
                                     @endswitch
                                 </td>
                             </tr>

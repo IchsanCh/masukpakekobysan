@@ -11,7 +11,7 @@ class SendPengingatDeadline extends Command
 {
     protected $signature = 'pengingat:deadline';
 
-    protected $description = 'Kirim pengingat WhatsApp untuk disposisi yang sudah lewat batas waktu dan belum selesai/ditolak';
+    protected $description = 'Kirim pengingat WhatsApp untuk disposisi yang sudah lewat batas waktu dan belum selesai';
 
     public function handle(WhatsAppNotifier $notifier): int
     {
@@ -24,7 +24,7 @@ class SendPengingatDeadline extends Command
         $overdue = Disposisi::with(['suratMasuk', 'dariUser', 'unit', 'kepadaUser'])
             ->whereNotNull('batas_waktu')
             ->where('batas_waktu', '<', now())
-            ->whereNotIn('status', ['selesai', 'ditolak'])
+            ->whereNotIn('status', ['selesai'])
             ->get();
 
         if ($overdue->isEmpty()) {

@@ -108,6 +108,14 @@
                                         </span>
                                     @break
 
+                                    @case('menunggu_musnah')
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-warning)]/10 text-[var(--color-warning)]">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-warning)]"></span>Menunggu
+                                            Persetujuan
+                                        </span>
+                                    @break
+
                                     @case('musnah')
                                         <span
                                             class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-danger)]/10 text-[var(--color-danger)]">

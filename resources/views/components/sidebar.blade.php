@@ -1,8 +1,8 @@
 <div class="drawer-side z-40">
     <label for="sidebar-toggle" aria-label="close sidebar" class="drawer-overlay"></label>
 
-    <aside class="min-h-full w-[260px] bg-[var(--color-slate-50)] border-r border-[var(--color-slate-200)]">
-        <div class="px-5 py-5 border-b border-[var(--color-slate-200)]">
+    <aside class="h-full w-[260px] bg-[var(--color-slate-50)] border-r border-[var(--color-slate-200)] flex flex-col">
+        <div class="shrink-0 px-5 py-5 border-b border-[var(--color-slate-200)]">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5">
                 <div
                     class="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--color-blue-500)] to-[var(--color-blue-600)] flex items-center justify-center shadow-sm">
@@ -17,7 +17,7 @@
             </a>
         </div>
 
-        <nav class="p-3 space-y-1">
+        <nav class="flex-1 overflow-y-auto p-3 space-y-1">
             @php $active = request()->routeIs('dashboard'); @endphp
             <a href="{{ route('dashboard') }}"
                 class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
@@ -122,7 +122,7 @@
         </nav>
 
         <div
-            class="absolute bottom-0 left-0 right-0 p-3 border-t border-[var(--color-slate-200)] bg-[var(--color-slate-50)]">
+            class="shrink-0 p-3 border-t border-[var(--color-slate-200)] bg-[var(--color-slate-50)]">
             <div class="flex items-center gap-3 px-2">
                 <div class="w-8 h-8 rounded-full bg-[var(--color-blue-100)] flex items-center justify-center">
                     <span

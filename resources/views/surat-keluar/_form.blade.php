@@ -195,6 +195,7 @@
                         <option value="aktif" @selected($currentStatusArsip === 'aktif')>Aktif</option>
                         <option value="inaktif" @selected($currentStatusArsip === 'inaktif')>Inaktif</option>
                         <option value="perlu_ditinjau" @selected($currentStatusArsip === 'perlu_ditinjau')>Perlu Ditinjau</option>
+                        <option value="menunggu_musnah" @selected($currentStatusArsip === 'menunggu_musnah')>Menunggu Persetujuan Musnah</option>
                         <option value="permanen" @selected($currentStatusArsip === 'permanen')>Permanen</option>
                         <option value="musnah" @selected($currentStatusArsip === 'musnah')>Musnah</option>
                     </select>

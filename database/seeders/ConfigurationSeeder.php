@@ -49,12 +49,6 @@ class ConfigurationSeeder extends Seeder
                 'group' => 'wa_template',
                 'description' => 'Template pengingat deadline disposisi',
             ],
-            [
-                'key' => 'wa_template_disposisi_ditolak',
-                'value' => "Halo {nama},\n\nDisposisi untuk surat *{nomor_surat}* ditolak oleh *{penolak}*.\nAlasan: {alasan}",
-                'group' => 'wa_template',
-                'description' => 'Template notifikasi disposisi ditolak',
-            ],
 
             // Scheduler
             [

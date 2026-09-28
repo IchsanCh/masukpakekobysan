@@ -53,10 +53,14 @@ Route::middleware('auth')->group(function () {
         // Log notifikasi WhatsApp
         Route::get('notifikasi', [WaNotificationController::class, 'index'])->name('notifikasi.index');
 
-        // Arsip — nasib akhir (peninjauan retensi)
+        // Arsip — nasib akhir (peninjauan retensi) & pemusnahan (approval-based)
         Route::get('arsip/nasib-akhir', [ArsipController::class, 'index'])->name('arsip.index');
-        Route::delete('arsip/nasib-akhir/{jenis}/{id}/musnah', [ArsipController::class, 'tetapkanMusnah'])->name('arsip.musnah');
+        Route::patch('arsip/nasib-akhir/{jenis}/{id}/musnah', [ArsipController::class, 'tetapkanMusnah'])->name('arsip.musnah');
         Route::post('arsip/nasib-akhir/{jenis}/{id}/permanen', [ArsipController::class, 'tetapkanPermanen'])->name('arsip.permanen');
+        Route::delete('arsip/nasib-akhir/{jenis}/{id}/approve', [ArsipController::class, 'approveMusnah'])->name('arsip.approve');
+        Route::delete('arsip/nasib-akhir/bulk-approve', [ArsipController::class, 'bulkApprove'])->name('arsip.bulk-approve');
+        Route::get('arsip/export/csv', [ArsipController::class, 'exportCsv'])->name('arsip.export-csv');
+        Route::get('arsip/export/pdf', [ArsipController::class, 'exportPdf'])->name('arsip.export-pdf');
     });
 
     // Lihat daftar surat masuk — agendaris (input) & pimpinan (pengawasan), dipakai buat mulai disposisi
