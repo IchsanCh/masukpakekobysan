@@ -3,7 +3,7 @@
     <div class="mb-6">
         <h1 class="font-[var(--font-heading)] text-2xl font-bold text-[var(--color-navy-900)] tracking-tight">Disposisi
             Saya</h1>
-        <p class="text-sm text-[var(--color-slate-500)] mt-0.5">Disposisi yang ditujukan ke kamu / unit kamu</p>
+        <p class="text-sm text-[var(--color-slate-500)] mt-0.5">Disposisi yang ditujukan ke kamu / bidang kamu</p>
     </div>
 
     <div

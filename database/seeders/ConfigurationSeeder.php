@@ -50,6 +50,31 @@ class ConfigurationSeeder extends Seeder
                 'description' => 'Template pengingat deadline disposisi',
             ],
 
+            [
+                'key' => 'wa_template_konfirmasi_musnah',
+                'value' => "Halo {nama},\n\nMasa retensi *{jenis}* nomor *{nomor_surat}* (tanggal {tanggal_surat}, kode klasifikasi {kode_klasifikasi}) sudah habis dan menunggu konfirmasi pemusnahan.\n\nSilakan tinjau dan setujui di:\n{link}",
+                'group' => 'wa_template',
+                'description' => 'Template notifikasi konfirmasi pemusnahan arsip',
+            ],
+            [
+                'key' => 'wa_template_konfirmasi_musnah_ringkasan',
+                'value' => "Halo {nama},\n\nAda *{jumlah} surat* yang masa retensinya sudah habis dan menunggu konfirmasi pemusnahan:\n\n{daftar_surat}\n\nSilakan tinjau dan setujui di:\n{link}",
+                'group' => 'wa_template',
+                'description' => 'Template notifikasi ringkasan konfirmasi pemusnahan arsip (banyak surat)',
+            ],
+            [
+                'key' => 'wa_template_dinilai_kembali',
+                'value' => "Halo {nama},\n\nMasa retensi *{jenis}* nomor *{nomor_surat}* (tanggal {tanggal_surat}, kode klasifikasi {kode_klasifikasi}) sudah habis dan perlu dinilai kembali untuk menentukan nasib akhirnya.\n\nSilakan tinjau di:\n{link}",
+                'group' => 'wa_template',
+                'description' => 'Template notifikasi arsip perlu dinilai kembali',
+            ],
+            [
+                'key' => 'wa_template_dinilai_kembali_ringkasan',
+                'value' => "Halo {nama},\n\nAda *{jumlah} surat* yang masa retensinya sudah habis dan perlu dinilai kembali:\n\n{daftar_surat}\n\nSilakan tinjau di:\n{link}",
+                'group' => 'wa_template',
+                'description' => 'Template notifikasi ringkasan arsip perlu dinilai kembali (banyak surat)',
+            ],
+
             // Scheduler
             [
                 'key' => 'pengingat_jam_kirim',

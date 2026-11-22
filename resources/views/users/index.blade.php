@@ -52,7 +52,7 @@
                             Pengguna</th>
                         <th
                             class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">
-                            Unit</th>
+                            Bidang</th>
                         <th
                             class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">
                             Peran</th>
@@ -267,11 +267,11 @@
 
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Unit
+                                <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Bidang
                                     *</label>
                                 <select name="unit_id" x-model="unit_id" required
                                     class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[var(--color-slate-200)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all">
-                                    <option value="" disabled>Pilih unit...</option>
+                                    <option value="" disabled>Pilih bidang...</option>
                                     @foreach ($units as $unit)
                                         <option value="{{ $unit->id }}">{{ $unit->nama_unit }}</option>
                                     @endforeach

@@ -14,10 +14,7 @@ class UnitController extends Controller
         $query = Unit::withCount('users');
 
         if ($search = $request->input('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('nama_unit', 'like', "%{$search}%")
-                  ->orWhere('singkatan', 'like', "%{$search}%");
-            });
+            $query->where('nama_unit', 'like', "%{$search}%");
         }
 
         $units = $query->orderBy('nama_unit')->paginate(15)->withQueryString();
@@ -35,7 +32,6 @@ class UnitController extends Controller
     {
         $validated = $request->validate([
             'nama_unit' => 'required|string|max:255|unique:units,nama_unit',
-            'singkatan' => 'nullable|string|max:20',
             'is_active' => 'boolean',
         ]);
 
@@ -51,7 +47,6 @@ class UnitController extends Controller
     {
         $validated = $request->validate([
             'nama_unit' => 'required|string|max:255|unique:units,nama_unit,' . $unit->id,
-            'singkatan' => 'nullable|string|max:20',
             'is_active' => 'boolean',
         ]);
 

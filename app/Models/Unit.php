@@ -9,7 +9,6 @@ class Unit extends Model
 {
     protected $fillable = [
         'nama_unit',
-        'singkatan',
         'is_active',
     ];
 

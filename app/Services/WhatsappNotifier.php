@@ -12,6 +12,12 @@ use Illuminate\Support\Collection;
 
 class WhatsAppNotifier
 {
+    /** Lebih dari ini (per jenis notif) -> kirim satu pesan ringkasan, bukan satu per surat. */
+    private const RETENSI_BATAS_RINGKAS = 3;
+
+    /** Maksimal nomor surat yang ditampilkan di pesan ringkasan. */
+    private const RETENSI_MAKS_DAFTAR = 5;
+
     /**
      * Surat masuk baru diinput agendaris -> kirim ke SEMUA pimpinan (semua unit).
      */
@@ -135,6 +141,95 @@ class WhatsAppNotifier
             ]);
 
             $this->dispatch($target, 'pengingat_deadline', $pesan, disposisiId: $disposisi->id);
+        }
+    }
+
+    /**
+     * Surat yang masa retensinya (masa_aktif + masa_inaktif) sudah habis -> kabari
+     * agendaris, karena merekalah yang memproses halaman Nasib Akhir Arsip.
+     *
+     * $tipe: 'konfirmasi_musnah' (menunggu persetujuan pemusnahan) atau
+     *        'dinilai_kembali' (perlu ditinjau ulang nasib akhirnya).
+     * $items: Collection berisi ['surat' => SuratMasuk|SuratKeluar, 'jenis' => 'masuk'|'keluar'].
+     *
+     * Sedikit surat (<= RETENSI_BATAS_RINGKAS) dikirim satu pesan per surat. Kalau
+     * lebih banyak, digabung jadi satu pesan ringkasan per agendaris supaya WA
+     * tidak kebanjiran.
+     */
+    public function notifyRetensiHabis(string $tipe, Collection $items): void
+    {
+        if ($items->isEmpty()) {
+            return;
+        }
+
+        $agendarisList = User::where('peran', 'agendaris')->where('is_active', true)->get();
+
+        if ($agendarisList->isEmpty()) {
+            return;
+        }
+
+        $tab = $tipe === 'konfirmasi_musnah' ? 'approval' : 'tinjau';
+
+        if ($items->count() > self::RETENSI_BATAS_RINGKAS) {
+            $this->notifyRetensiRingkasan($tipe, $tab, $items, $agendarisList);
+
+            return;
+        }
+
+        $template = Configuration::waTemplate($tipe);
+
+        if (empty($template)) {
+            return;
+        }
+
+        foreach ($items as $item) {
+            $surat = $item['surat'];
+
+            foreach ($agendarisList as $agendaris) {
+                $pesan = $this->render($template, [
+                    'nama' => $agendaris->name,
+                    'jenis' => $item['jenis'] === 'keluar' ? 'surat keluar' : 'surat masuk',
+                    'nomor_surat' => $surat->nomor_surat,
+                    'tanggal_surat' => $surat->tanggal_surat?->format('d M Y') ?? '-',
+                    'kode_klasifikasi' => $surat->referensiRetensi?->kode_klasifikasi ?? '-',
+                    'link' => route('arsip.index', ['jenis' => $item['jenis'], 'tab' => $tab]),
+                ]);
+
+                $this->dispatch($agendaris, $tipe, $pesan);
+            }
+        }
+    }
+
+    private function notifyRetensiRingkasan(string $tipe, string $tab, Collection $items, Collection $agendarisList): void
+    {
+        $template = Configuration::waTemplate($tipe . '_ringkasan');
+
+        if (empty($template)) {
+            return;
+        }
+
+        $daftar = $items->take(self::RETENSI_MAKS_DAFTAR)
+            ->map(fn (array $item) => '- [' . ($item['jenis'] === 'keluar' ? 'Keluar' : 'Masuk') . '] ' . $item['surat']->nomor_surat)
+            ->implode("\n");
+
+        $sisa = $items->count() - self::RETENSI_MAKS_DAFTAR;
+
+        if ($sisa > 0) {
+            $daftar .= "\n- ...dan {$sisa} surat lainnya";
+        }
+
+        // Halaman Arsip menampilkan satu jenis surat per tab; arahkan ke jenis yang ada.
+        $jenisLink = $items->contains(fn (array $item) => $item['jenis'] === 'masuk') ? 'masuk' : 'keluar';
+
+        foreach ($agendarisList as $agendaris) {
+            $pesan = $this->render($template, [
+                'nama' => $agendaris->name,
+                'jumlah' => $items->count(),
+                'daftar_surat' => $daftar,
+                'link' => route('arsip.index', ['jenis' => $jenisLink, 'tab' => $tab]),
+            ]);
+
+            $this->dispatch($agendaris, $tipe, $pesan);
         }
     }
 

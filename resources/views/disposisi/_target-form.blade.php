@@ -1,10 +1,10 @@
 {{--
     Partial form target disposisi. Include dengan parameter:
     - $actionUrl   : URL tujuan submit
-    - $units       : Collection Unit aktif
+    - $units       : Collection Bidang aktif
     - $usersForPersonal : Collection User aktif
     - $submitLabel : teks tombol submit (opsional, default "Kirim Disposisi")
-    - $pimpinanOptions : Collection pimpinan seunit (opsional) — kalau diisi, tampilkan
+    - $pimpinanOptions : Collection pimpinan sebidang (opsional) — kalau diisi, tampilkan
                          dropdown "Atas Nama Pimpinan" (dipakai agendaris saat bikin disposisi root)
     - $pimpinanTetap   : User (opsional) — kalau diisi, tampilkan sebagai info tetap
                          "diteruskan atas nama X" (dipakai agendaris saat forward, pimpinan-nya
@@ -69,7 +69,7 @@
                 class="text-center px-3 py-2 rounded-xl border text-sm font-medium transition-colors
                         border-[var(--color-slate-200)] text-[var(--color-slate-500)]
                         peer-checked:border-[var(--color-blue-500)] peer-checked:bg-[var(--color-blue-50)] peer-checked:text-[var(--color-blue-600)]">
-                Ke Unit
+                Ke Bidang
             </div>
         </label>
         <label class="flex-1 cursor-pointer">
@@ -84,10 +84,10 @@
     </div>
 
     <div x-show="tipe === 'unit'">
-        <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Unit Tujuan</label>
+        <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Bidang Tujuan</label>
         <select name="unit_id" :required="tipe === 'unit'"
             class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[var(--color-slate-200)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all">
-            <option value="">Pilih unit...</option>
+            <option value="">Pilih bidang...</option>
             @foreach ($units as $unit)
                 <option value="{{ $unit->id }}">{{ $unit->nama_unit }}</option>
             @endforeach

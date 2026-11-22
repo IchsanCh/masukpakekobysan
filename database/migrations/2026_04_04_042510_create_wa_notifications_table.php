@@ -40,6 +40,8 @@ return new class () extends Migration {
                 'tindaklanjut_selesai',
                 'pengingat_deadline',
                 'disposisi_ditolak',
+                'konfirmasi_musnah',
+                'dinilai_kembali',
             ]);
             $table->text('pesan');
             $table->enum('status_kirim', ['pending', 'terkirim', 'gagal'])->default('pending');

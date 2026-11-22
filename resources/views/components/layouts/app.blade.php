@@ -18,7 +18,7 @@
         <input id="sidebar-toggle" type="checkbox" class="drawer-toggle" />
 
         {{-- Main Content --}}
-        <div class="drawer-content flex flex-col h-full">
+        <div class="drawer-content flex flex-col h-full overflow-hidden">
             {{-- Top Navbar --}}
             <x-navbar />
 

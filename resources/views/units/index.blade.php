@@ -1,19 +1,18 @@
-<x-layouts.app title="Master Unit / Bidang">
+<x-layouts.app title="Master Bidang">
 
     <div class="flex items-center justify-between mb-6">
         <div>
-            <h1 class="font-[var(--font-heading)] text-2xl font-bold text-[var(--color-navy-900)] tracking-tight">Unit /
-                Bidang</h1>
-            <p class="text-sm text-[var(--color-slate-500)] mt-0.5">Kelola daftar unit dan bidang instansi</p>
+            <h1 class="font-[var(--font-heading)] text-2xl font-bold text-[var(--color-navy-900)] tracking-tight">Bidang</h1>
+            <p class="text-sm text-[var(--color-slate-500)] mt-0.5">Kelola daftar bidang instansi</p>
         </div>
-        <button @click="$dispatch('open-unit-modal')"
+        <button @click="$dispatch('open-bidang-modal')"
             class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-white
                        bg-gradient-to-br from-[var(--color-blue-500)] to-[var(--color-blue-600)]
                        shadow-[0_1px_2px_rgba(15,23,42,0.1),0_4px_10px_-2px_rgba(37,99,235,0.35)]
                        hover:shadow-[0_1px_2px_rgba(15,23,42,0.1),0_8px_16px_-2px_rgba(37,99,235,0.45)]
                        hover:-translate-y-px active:translate-y-0 transition-all duration-200">
             <x-icon name="plus" class="w-4 h-4" />
-            Tambah Unit
+            Tambah Bidang
         </button>
     </div>
 
@@ -28,7 +27,7 @@
                 <div class="relative flex-1 max-w-sm">
                     <x-icon name="magnifying-glass"
                         class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-slate-400)]" />
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama unit..."
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama bidang..."
                         class="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-[var(--color-slate-200)] bg-white
                                placeholder:text-[var(--color-slate-400)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all" />
                 </div>
@@ -48,10 +47,7 @@
                     <tr class="bg-[var(--color-slate-50)]/60 border-b border-[var(--color-slate-100)]">
                         <th
                             class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">
-                            Nama Unit</th>
-                        <th
-                            class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">
-                            Singkatan</th>
+                            Nama Bidang</th>
                         <th
                             class="px-5 py-3 text-center text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">
                             Jumlah User</th>
@@ -69,14 +65,6 @@
                             class="even:bg-[var(--color-slate-50)]/40 hover:bg-[var(--color-blue-50)]/40 transition-colors">
                             <td class="px-5 py-3.5 text-sm font-semibold text-[var(--color-navy-900)]">
                                 {{ $unit->nama_unit }}</td>
-                            <td class="px-5 py-3.5">
-                                @if ($unit->singkatan)
-                                    <span
-                                        class="font-mono text-xs font-semibold text-[var(--color-blue-600)] bg-[var(--color-blue-50)] px-2 py-0.5 rounded-md">{{ $unit->singkatan }}</span>
-                                @else
-                                    <span class="text-sm text-[var(--color-slate-300)]">-</span>
-                                @endif
-                            </td>
                             <td class="px-5 py-3.5 text-sm text-[var(--color-slate-500)] text-center">
                                 {{ $unit->users_count }}</td>
                             <td class="px-5 py-3.5 text-center">
@@ -96,10 +84,9 @@
                             <td class="px-5 py-3.5 text-right">
                                 <div class="flex items-center justify-end gap-1">
                                     <button
-                                        @click="$dispatch('open-unit-modal', {
+                                        @click="$dispatch('open-bidang-modal', {
                                         id: {{ $unit->id }},
                                         nama_unit: '{{ addslashes($unit->nama_unit) }}',
-                                        singkatan: '{{ addslashes($unit->singkatan ?? '') }}',
                                         is_active: {{ $unit->is_active ? 'true' : 'false' }}
                                     })"
                                         class="p-1.5 rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-blue-500)] hover:bg-[var(--color-blue-50)] transition-colors"
@@ -120,13 +107,13 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-5 py-14 text-center">
+                            <td colspan="4" class="px-5 py-14 text-center">
                                 <div
                                     class="w-12 h-12 rounded-2xl bg-[var(--color-slate-100)] flex items-center justify-center mx-auto mb-3">
                                     <x-icon name="building-office" class="w-5 h-5 text-[var(--color-slate-400)]" />
                                 </div>
-                                <p class="text-sm font-medium text-[var(--color-slate-500)]">Belum ada data unit.</p>
-                                <p class="text-xs text-[var(--color-slate-400)] mt-0.5">Tambahkan unit/bidang baru untuk
+                                <p class="text-sm font-medium text-[var(--color-slate-500)]">Belum ada data bidang.</p>
+                                <p class="text-xs text-[var(--color-slate-400)] mt-0.5">Tambahkan bidang baru untuk
                                     mulai mengelola struktur.</p>
                             </td>
                         </tr>
@@ -147,24 +134,21 @@
         id: null,
         submitting: false,
         nama_unit: '',
-        singkatan: '',
         is_active: true,
 
         reset() {
             this.isEdit = false;
             this.id = null;
             this.nama_unit = '';
-            this.singkatan = '';
             this.is_active = true;
         }
     }"
-        @open-unit-modal.window="
+        @open-bidang-modal.window="
             submitting = false;
             if ($event.detail && $event.detail.id) {
                 isEdit = true;
                 id = $event.detail.id;
                 nama_unit = $event.detail.nama_unit;
-                singkatan = $event.detail.singkatan;
                 is_active = $event.detail.is_active;
             } else {
                 reset();
@@ -189,7 +173,7 @@
                 @click.stop>
                 <div class="flex items-center justify-between mb-5">
                     <h3 class="font-[var(--font-heading)] text-lg font-bold text-[var(--color-navy-900)] tracking-tight"
-                        x-text="isEdit ? 'Edit Unit' : 'Tambah Unit Baru'"></h3>
+                        x-text="isEdit ? 'Edit Bidang' : 'Tambah Bidang Baru'"></h3>
                     <button @click="open = false"
                         class="p-1 rounded-lg hover:bg-[var(--color-slate-100)] transition-colors"><x-icon
                             name="x-mark" class="w-5 h-5 text-[var(--color-slate-400)]" /></button>
@@ -202,7 +186,7 @@
 
                     <div class="space-y-3">
                         <div>
-                            <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Nama Unit
+                            <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Nama Bidang
                                 *</label>
                             <input type="text" name="nama_unit" x-model="nama_unit" required
                                 placeholder="Contoh: Bidang Perizinan"
@@ -212,18 +196,11 @@
                             @enderror
                         </div>
 
-                        <div>
-                            <label
-                                class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Singkatan</label>
-                            <input type="text" name="singkatan" x-model="singkatan" placeholder="Contoh: BIDIZIN"
-                                class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[var(--color-slate-200)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all" />
-                        </div>
-
                         <label class="flex items-center gap-3 cursor-pointer">
                             <input type="hidden" name="is_active" value="0" />
                             <input type="checkbox" name="is_active" value="1"
                                 class="toggle toggle-sm toggle-primary" x-bind:checked="is_active" />
-                            <span class="text-sm text-[var(--color-slate-600)]">Unit Aktif</span>
+                            <span class="text-sm text-[var(--color-slate-600)]">Bidang Aktif</span>
                         </label>
                     </div>
 
@@ -245,7 +222,7 @@
     @if ($errors->any())
         <script>
             document.addEventListener('alpine:init', () => {
-                setTimeout(() => window.dispatchEvent(new CustomEvent('open-unit-modal')), 100);
+                setTimeout(() => window.dispatchEvent(new CustomEvent('open-bidang-modal')), 100);
             });
         </script>
     @endif
