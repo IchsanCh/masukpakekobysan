@@ -7,6 +7,7 @@ use App\Http\Controllers\ArsipController;
 use App\Http\Controllers\ConfigurationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DisposisiController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TindakLanjutController;
 use App\Http\Controllers\ReferensiRetensiController;
 use App\Http\Controllers\SuratKeluarController;
@@ -33,6 +34,19 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Data Akun — semua peran boleh ubah data akunnya sendiri (nama, username, email,
+    // password, no. WhatsApp via OTP). Sengaja di luar middleware role.
+    Route::get('profil', [ProfileController::class, 'show'])->name('profile.show');
+    Route::put('profil/nama', [ProfileController::class, 'updateName'])->name('profile.name');
+    Route::put('profil/username', [ProfileController::class, 'updateUsername'])->name('profile.username');
+    Route::put('profil/email', [ProfileController::class, 'updateEmail'])->name('profile.email');
+    Route::put('profil/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::post('profil/no-wa/otp', [ProfileController::class, 'requestPhoneOtp'])
+        ->middleware('throttle:6,1')->name('profile.phone.otp');
+    Route::post('profil/no-wa/verifikasi', [ProfileController::class, 'verifyPhoneOtp'])
+        ->middleware('throttle:10,1')->name('profile.phone.verify');
+    Route::delete('profil/no-wa', [ProfileController::class, 'cancelPhoneOtp'])->name('profile.phone.cancel');
 
     // Master Data — hanya agendaris, modal-based (no create/edit pages)
     Route::middleware('role:agendaris')->group(function () {

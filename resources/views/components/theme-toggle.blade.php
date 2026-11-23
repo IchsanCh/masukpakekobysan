@@ -1,5 +1,7 @@
 {{-- Tombol ganti tema. Ikon ditentukan CSS lewat data-theme, jadi tidak perlu menunggu Alpine. --}}
 <button type="button" @click="$store.theme.toggle()" title="Ganti tema terang/gelap" aria-label="Ganti tema terang/gelap"
+    :title="$store.theme.current === 'dark' ? 'Ganti ke tema terang' : 'Ganti ke tema gelap'"
+    :aria-label="$store.theme.current === 'dark' ? 'Ganti ke tema terang' : 'Ganti ke tema gelap'"
     {{ $attributes->merge(['class' => 'btn btn-ghost btn-sm btn-square']) }}>
     {{-- Ikon bulan: tampil saat tema terang --}}
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"

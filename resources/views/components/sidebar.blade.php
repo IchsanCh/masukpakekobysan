@@ -1,8 +1,8 @@
 <div class="drawer-side z-40">
     <label for="sidebar-toggle" aria-label="close sidebar" class="drawer-overlay"></label>
 
-    <aside class="h-full w-[260px] bg-[var(--color-slate-50)] border-r border-[var(--color-slate-200)] flex flex-col">
-        <div class="shrink-0 px-5 py-5 border-b border-[var(--color-slate-200)]">
+    <aside class="h-full w-[260px] max-w-[85vw] bg-[var(--color-slate-50)] border-r border-[var(--color-slate-200)] flex flex-col">
+        <div class="shrink-0 flex items-center justify-between gap-2 pl-5 pr-3 lg:pr-5 py-5 border-b border-[var(--color-slate-200)]">
             <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5">
                 <div
                     class="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--color-blue-500)] to-[var(--color-blue-600)] flex items-center justify-center shadow-sm">
@@ -12,27 +12,34 @@
                     <p
                         class="font-[var(--font-heading)] text-[15px] font-bold text-[var(--color-navy-900)] leading-tight">
                         MasukPakEko</p>
-                    <p class="text-[10px] text-[var(--color-slate-400)] tracking-wide uppercase">DPMPTSP Pekalongan</p>
+                    <p class="text-[11px] text-[var(--color-slate-500)] tracking-wide uppercase">DPMPTSP Pekalongan</p>
                 </div>
             </a>
+
+            <label for="sidebar-toggle" aria-label="Tutup menu navigasi"
+                class="btn btn-ghost btn-square size-11 rounded-xl lg:hidden cursor-pointer -my-2">
+                <x-icon name="x-mark" class="w-5 h-5 text-[var(--color-slate-500)]" />
+            </label>
         </div>
 
-        <nav class="flex-1 overflow-y-auto p-3 space-y-1">
+        <nav class="flex-1 overflow-y-auto p-3 pb-6 space-y-1">
             @php $active = request()->routeIs('dashboard'); @endphp
             <a href="{{ route('dashboard') }}"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                @if ($active) aria-current="page" @endif
+                class="flex items-center gap-3 px-3 py-3 lg:py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                       {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                 <x-icon name="home" :solid="$active" class="w-[18px] h-[18px]" />
                 Dashboard
             </a>
 
             <p
-                class="px-3 pt-5 pb-1.5 text-[10px] font-semibold text-[var(--color-slate-400)] uppercase tracking-wider">
+                class="px-3 pt-5 pb-1.5 text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">
                 Persuratan</p>
 
             @php $active = request()->routeIs('surat-masuk.*'); @endphp
             <a href="{{ route('surat-masuk.index') }}"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                @if ($active) aria-current="page" @endif
+                class="flex items-center gap-3 px-3 py-3 lg:py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                       {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                 <x-icon name="inbox" :solid="$active" class="w-[18px] h-[18px]" />
                 Surat Masuk
@@ -40,7 +47,8 @@
 
             @php $active = request()->routeIs('surat-keluar.*'); @endphp
             <a href="{{ route('surat-keluar.index') }}"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                @if ($active) aria-current="page" @endif
+                class="flex items-center gap-3 px-3 py-3 lg:py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                       {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                 <x-icon name="paper-airplane" :solid="$active" class="w-[18px] h-[18px]" />
                 Surat Keluar
@@ -48,7 +56,8 @@
 
             @php $active = request()->routeIs('disposisi.*'); @endphp
             <a href="{{ route('disposisi.inbox') }}"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                @if ($active) aria-current="page" @endif
+                class="flex items-center gap-3 px-3 py-3 lg:py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                       {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                 <x-icon name="arrow-right-circle" :solid="$active" class="w-[18px] h-[18px]" />
                 Disposisi
@@ -56,7 +65,8 @@
 
             @php $active = request()->routeIs('tindak-lanjut.*'); @endphp
             <a href="{{ route('tindak-lanjut.index') }}"
-                class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                @if ($active) aria-current="page" @endif
+                class="flex items-center gap-3 px-3 py-3 lg:py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                       {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                 <x-icon name="check-circle" :solid="$active" class="w-[18px] h-[18px]" />
                 Tindak Lanjut
@@ -64,12 +74,13 @@
 
             @if (auth()->user()->hasRole('agendaris'))
                 <p
-                    class="px-3 pt-5 pb-1.5 text-[10px] font-semibold text-[var(--color-slate-400)] uppercase tracking-wider">
+                    class="px-3 pt-5 pb-1.5 text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">
                     Master Data</p>
 
                 @php $active = request()->routeIs('users.*'); @endphp
                 <a href="{{ route('users.index') }}"
-                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                    @if ($active) aria-current="page" @endif
+                    class="flex items-center gap-3 px-3 py-3 lg:py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                           {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                     <x-icon name="users" :solid="$active" class="w-[18px] h-[18px]" />
                     Pengguna
@@ -77,7 +88,8 @@
 
                 @php $active = request()->routeIs('units.*'); @endphp
                 <a href="{{ route('units.index') }}"
-                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                    @if ($active) aria-current="page" @endif
+                    class="flex items-center gap-3 px-3 py-3 lg:py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                           {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                     <x-icon name="building-office" :solid="$active" class="w-[18px] h-[18px]" />
                     Bidang
@@ -85,19 +97,21 @@
 
                 @php $active = request()->routeIs('retensi.*'); @endphp
                 <a href="{{ route('retensi.index') }}"
-                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                    @if ($active) aria-current="page" @endif
+                    class="flex items-center gap-3 px-3 py-3 lg:py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                           {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                     <x-icon name="archive-box" :solid="$active" class="w-[18px] h-[18px]" />
                     Retensi Arsip
                 </a>
 
                 <p
-                    class="px-3 pt-5 pb-1.5 text-[10px] font-semibold text-[var(--color-slate-400)] uppercase tracking-wider">
+                    class="px-3 pt-5 pb-1.5 text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">
                     Pengaturan</p>
 
                 @php $active = request()->routeIs('configuration.*'); @endphp
                 <a href="{{ route('configuration.index') }}"
-                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                    @if ($active) aria-current="page" @endif
+                    class="flex items-center gap-3 px-3 py-3 lg:py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                           {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                     <x-icon name="cog-6-tooth" :solid="$active" class="w-[18px] h-[18px]" />
                     Konfigurasi
@@ -105,7 +119,8 @@
 
                 @php $active = request()->routeIs('notifikasi.*'); @endphp
                 <a href="{{ route('notifikasi.index') }}"
-                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                    @if ($active) aria-current="page" @endif
+                    class="flex items-center gap-3 px-3 py-3 lg:py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                           {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                     <x-icon name="bell" :solid="$active" class="w-[18px] h-[18px]" />
                     Log Notifikasi
@@ -113,35 +128,13 @@
 
                 @php $active = request()->routeIs('arsip.*'); @endphp
                 <a href="{{ route('arsip.index') }}"
-                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                    @if ($active) aria-current="page" @endif
+                    class="flex items-center gap-3 px-3 py-3 lg:py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                           {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                     <x-icon name="eye" :solid="$active" class="w-[18px] h-[18px]" />
                     Nasib Akhir Arsip
                 </a>
             @endif
         </nav>
-
-        <div
-            class="shrink-0 p-3 border-t border-[var(--color-slate-200)] bg-[var(--color-slate-50)]">
-            <div class="flex items-center gap-3 px-2">
-                <div class="w-8 h-8 rounded-full bg-[var(--color-blue-100)] flex items-center justify-center">
-                    <span
-                        class="text-[var(--color-blue-600)] text-xs font-bold">{{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-[var(--color-navy-900)] truncate">{{ auth()->user()->name }}</p>
-                    <p class="text-[10px] text-[var(--color-slate-400)] truncate">
-                        {{ ucfirst(auth()->user()->peran) }}</p>
-                </div>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit"
-                        class="p-1.5 rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-danger)] hover:bg-[var(--color-slate-100)] transition-colors"
-                        title="Logout">
-                        <x-icon name="arrow-right-start-on-rectangle" class="w-4 h-4" />
-                    </button>
-                </form>
-            </div>
-        </div>
     </aside>
 </div>

@@ -1,6 +1,6 @@
 <x-layouts.app title="Retensi Arsip">
 
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
             <h1 class="font-[var(--font-heading)] text-2xl font-bold text-[var(--color-navy-900)] tracking-tight">Retensi
                 Arsip</h1>

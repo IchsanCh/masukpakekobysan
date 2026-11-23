@@ -1,6 +1,6 @@
 <x-layouts.app title="Master Bidang">
 
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
             <h1 class="font-[var(--font-heading)] text-2xl font-bold text-[var(--color-navy-900)] tracking-tight">Bidang</h1>
             <p class="text-sm text-[var(--color-slate-500)] mt-0.5">Kelola daftar bidang instansi</p>
