@@ -80,7 +80,7 @@
                 class="flex items-center gap-3 px-3 min-h-11 rounded-xl text-sm font-medium transition-colors
                       {{ $onProfilePage ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-700)] hover:bg-[var(--color-slate-100)]' }}">
                 <x-icon name="user-circle" class="w-[18px] h-[18px] shrink-0" />
-                Data Akun
+                Profile
             </a>
 
             <div class="my-1 h-px bg-[var(--color-slate-200)]"></div>

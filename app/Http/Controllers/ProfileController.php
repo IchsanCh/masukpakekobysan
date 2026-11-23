@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Services\PhoneOtp;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -13,7 +12,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 /**
- * Halaman Data Akun — dipakai SEMUA peran untuk mengubah datanya sendiri.
+ * Halaman Profile — dipakai SEMUA peran untuk mengubah datanya sendiri.
  * Yang diubah selalu akun yang sedang login ($request->user()), tidak pernah
  * lewat id dari request, jadi tidak ada celah mengubah akun orang lain.
  *
@@ -44,7 +43,10 @@ class ProfileController extends Controller
     }
 
     /**
-     * Ganti username -> user otomatis keluar, login ulang pakai username baru.
+     * Ganti username. Sesi TIDAK diputus: sesi login menyimpan id user (bukan username),
+     * username hanya dibaca saat login, dan password sudah diminta ulang di form ini.
+     * Memaksa logout tidak menambah keamanan (sesi perangkat lain tetap hidup) dan hanya
+     * membuat user login ulang, apalagi kalau username barunya salah ketik.
      */
     public function updateUsername(Request $request): RedirectResponse
     {
@@ -69,12 +71,8 @@ class ProfileController extends Controller
 
         $user->update(['username' => $validated['username']]);
 
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('login')
-            ->with('success', 'Username berhasil diganti. Silakan login dengan username baru.');
+        return redirect()->route('profile.show')
+            ->with('success', 'Username diganti menjadi ' . $validated['username'] . '. Pakai username baru saat login berikutnya.');
     }
 
     public function updateEmail(Request $request): RedirectResponse

@@ -1,283 +1,311 @@
 @php
-    $input = 'w-full px-3.5 py-2.5 text-base sm:text-sm rounded-xl border border-[var(--color-slate-200)] bg-white text-[var(--color-navy-900)] placeholder:text-[var(--color-slate-400)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all';
-    $label = 'block text-sm font-medium text-[var(--color-navy-700)] mb-1.5';
-    $error = 'text-xs text-[var(--color-danger)] mt-1';
-    $hint = 'text-xs text-[var(--color-slate-500)] mt-1.5';
-    $panel = 'bg-white rounded-2xl border border-[var(--color-slate-200)]/70 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_28px_-10px_rgba(15,23,42,0.10)] overflow-hidden';
-    $toggle = 'shrink-0 inline-flex items-center justify-center min-h-11 sm:min-h-9 px-4 rounded-xl text-sm font-medium bg-white border border-[var(--color-slate-200)] text-[var(--color-slate-600)] hover:border-[var(--color-slate-300)] hover:text-[var(--color-navy-900)] transition-colors cursor-pointer';
-    $primary = 'inline-flex items-center justify-center min-h-11 sm:min-h-10 px-5 rounded-xl text-sm font-semibold text-white bg-gradient-to-br from-[var(--color-blue-500)] to-[var(--color-blue-600)] shadow-[0_4px_10px_-2px_rgba(37,99,235,0.35)] hover:shadow-[0_8px_16px_-2px_rgba(37,99,235,0.45)] transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer';
-    $ghost = 'inline-flex items-center justify-center min-h-11 sm:min-h-10 px-4 rounded-xl text-sm font-medium text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
-    $lockSubmit = "\$el.querySelector('button[type=submit]').disabled = true";
+    $initials =
+        collect(preg_split('/\s+/', trim($user->name ?? '')))
+            ->filter()
+            ->take(2)
+            ->map(fn($kata) => mb_strtoupper(mb_substr($kata, 0, 1)))
+            ->implode('') ?:
+        'U';
+
+    // Baris yang langsung terbuka: yang barusan gagal divalidasi, atau OTP yang sedang berjalan.
+    $openOnLoad =
+        collect(['name', 'username', 'email', 'password'])->first(fn($bag) => $errors->hasBag($bag)) ??
+        ($pendingPhone || $errors->hasBag('phone') || $errors->hasBag('otp') ? 'phone' : null);
+
+    // Input pertama tiap baris, untuk fokus otomatis saat baris dibuka.
+    $focusIds = [
+        'name' => 'name',
+        'username' => 'username',
+        'email' => 'email',
+        'phone' => $pendingPhone ? 'kode' : 'no_wa',
+        'password' => 'current_password',
+    ];
+
+    $panel =
+        'bg-white rounded-2xl border border-[var(--color-slate-200)]/70 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_28px_-10px_rgba(15,23,42,0.10)] overflow-hidden divide-y divide-[color:var(--color-slate-100)]';
+    $groupTitle = 'font-[var(--font-heading)] text-base font-semibold text-[var(--color-navy-900)] mb-3';
+
+    $btn =
+        'inline-flex items-center justify-center min-h-11 sm:min-h-10 rounded-xl text-sm transition-colors cursor-pointer disabled:cursor-not-allowed focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--color-blue-500)]';
+    $primary =
+        $btn .
+        ' px-5 font-semibold text-white bg-gradient-to-br from-[var(--color-blue-500)] to-[var(--color-blue-600)] shadow-[0_4px_10px_-2px_rgba(37,99,235,0.35)] hover:shadow-[0_8px_16px_-2px_rgba(37,99,235,0.45)] disabled:opacity-60';
+    $ghost =
+        $btn .
+        ' px-4 font-medium text-[var(--color-slate-600)] hover:bg-[var(--color-slate-100)] disabled:opacity-50';
 @endphp
 
-<x-layouts.app title="Data Akun">
+<x-layouts.app title="Profile">
 
-    <div class="mb-6">
-        <h1 class="font-[var(--font-heading)] text-2xl font-bold text-[var(--color-navy-900)] tracking-tight">Data Akun
-        </h1>
-        <p class="text-sm text-[var(--color-slate-500)] mt-0.5">Ubah username, password, email, dan nomor WhatsApp kamu
-        </p>
-    </div>
+    <div class="max-w-4xl" x-data="{
+        open: @js($openOnLoad),
+        focusIds: @js($focusIds),
+        toggle(key) {
+            this.open = this.open === key ? null : key;
+            if (this.open) this.focusField();
+        },
+        focusField() {
+            this.$nextTick(() => setTimeout(() => document.getElementById(this.focusIds[this.open])?.focus(), 80));
+        },
+        init() { if (this.open) this.focusField(); }
+    }" @keydown.escape="open = null">
 
-    <div class="max-w-2xl space-y-4">
+        <div class="mb-8">
+            <h1 class="font-[var(--font-heading)] text-2xl font-bold text-[var(--color-navy-900)] tracking-tight">
+                Profile</h1>
+            <p class="text-sm text-[var(--color-slate-500)] mt-0.5">Kelola data akun dan keamanan login kamu.</p>
+        </div>
 
-        {{-- Info akun (tidak bisa diubah sendiri) --}}
-        <section class="{{ $panel }}">
-            <div class="flex items-center gap-3 px-5 py-4">
-                <span
-                    class="w-11 h-11 rounded-full bg-gradient-to-br from-[var(--color-blue-500)] to-[var(--color-blue-600)] flex items-center justify-center shrink-0">
-                    <span
-                        class="text-white text-base font-bold">{{ mb_strtoupper(mb_substr($user->name ?? 'U', 0, 1)) }}</span>
-                </span>
-                <div class="min-w-0">
-                    <p class="text-sm font-semibold text-[var(--color-navy-900)] truncate">{{ $user->name }}</p>
-                    <p class="text-xs text-[var(--color-slate-500)] truncate">
-                        {{ ucfirst($user->peran) }}@if ($user->unit)
-                            , {{ $user->unit->nama_unit }}
-                        @endif
-                    </p>
-                </div>
-            </div>
-            <p class="px-5 py-3 text-xs text-[var(--color-slate-500)] border-t border-[var(--color-slate-100)] bg-[var(--color-slate-50)]/50">
-                Peran dan bidang diatur oleh agendaris.
-            </p>
-        </section>
+        <div class="flex flex-col gap-8 lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-12">
 
-        {{-- Nama --}}
-        <section x-data="{ open: {{ $errors->hasBag('name') ? 'true' : 'false' }} }" class="{{ $panel }}">
-            <div class="flex items-center justify-between gap-3 px-5 py-4">
-                <div class="min-w-0">
-                    <h2 class="text-sm font-semibold text-[var(--color-navy-900)]">Nama lengkap</h2>
-                    <p class="text-sm text-[var(--color-slate-500)] truncate">{{ $user->name }}</p>
-                </div>
-                <button type="button" @click="open = !open" :aria-expanded="open" class="{{ $toggle }}"
-                    x-text="open ? 'Tutup' : 'Ubah'">Ubah</button>
-            </div>
-            <div x-show="open" style="display: none;" x-transition
-                class="px-5 pb-5 pt-4 border-t border-[var(--color-slate-100)]">
-                <form method="POST" action="{{ route('profile.name') }}" @submit="{{ $lockSubmit }}">
-                    @csrf
-                    @method('PUT')
-                    <label for="name" class="{{ $label }}">Nama lengkap</label>
-                    <input id="name" type="text" name="name" value="{{ old('name', $user->name) }}" required
-                        maxlength="255" autocomplete="name" class="{{ $input }}" />
-                    @error('name', 'name')
-                        <p class="{{ $error }}">{{ $message }}</p>
-                    @enderror
-                    <div class="flex justify-end gap-2 mt-4">
-                        <button type="button" @click="open = false" class="{{ $ghost }}">Batal</button>
-                        <button type="submit" class="{{ $primary }}">Simpan nama</button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        {{-- Username --}}
-        <section x-data="{ open: {{ $errors->hasBag('username') ? 'true' : 'false' }} }" class="{{ $panel }}">
-            <div class="flex items-center justify-between gap-3 px-5 py-4">
-                <div class="min-w-0">
-                    <h2 class="text-sm font-semibold text-[var(--color-navy-900)]">Username</h2>
-                    <p class="text-sm text-[var(--color-slate-500)] truncate">{{ $user->username }}</p>
-                </div>
-                <button type="button" @click="open = !open" :aria-expanded="open" class="{{ $toggle }}"
-                    x-text="open ? 'Tutup' : 'Ubah'">Ubah</button>
-            </div>
-            <div x-show="open" style="display: none;" x-transition
-                class="px-5 pb-5 pt-4 border-t border-[var(--color-slate-100)]">
-                <form method="POST" action="{{ route('profile.username') }}" @submit="{{ $lockSubmit }}"
-                    class="space-y-3">
-                    @csrf
-                    @method('PUT')
-                    <div>
-                        <label for="username" class="{{ $label }}">Username baru</label>
-                        <input id="username" type="text" name="username" value="{{ old('username', $user->username) }}"
-                            required maxlength="50" autocomplete="username" autocapitalize="none" spellcheck="false"
-                            class="{{ $input }}" />
-                        @error('username', 'username')
-                            <p class="{{ $error }}">{{ $message }}</p>
-                        @enderror
-                        <p class="{{ $hint }}">Setelah diganti, kamu otomatis keluar dan harus login lagi dengan
-                            username baru.</p>
-                    </div>
-                    <div>
-                        <label for="username_password" class="{{ $label }}">Password saat ini</label>
-                        <input id="username_password" type="password" name="current_password" required
-                            autocomplete="current-password" class="{{ $input }}" />
-                        @error('current_password', 'username')
-                            <p class="{{ $error }}">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div class="flex justify-end gap-2 pt-1">
-                        <button type="button" @click="open = false" class="{{ $ghost }}">Batal</button>
-                        <button type="submit" class="{{ $primary }}">Ganti username</button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        {{-- Email --}}
-        <section x-data="{ open: {{ $errors->hasBag('email') ? 'true' : 'false' }} }" class="{{ $panel }}">
-            <div class="flex items-center justify-between gap-3 px-5 py-4">
-                <div class="min-w-0">
-                    <h2 class="text-sm font-semibold text-[var(--color-navy-900)]">Email</h2>
-                    <p class="text-sm text-[var(--color-slate-500)] truncate">{{ $user->email ?: 'Belum diisi' }}</p>
-                </div>
-                <button type="button" @click="open = !open" :aria-expanded="open" class="{{ $toggle }}"
-                    x-text="open ? 'Tutup' : 'Ubah'">Ubah</button>
-            </div>
-            <div x-show="open" style="display: none;" x-transition
-                class="px-5 pb-5 pt-4 border-t border-[var(--color-slate-100)]">
-                <form method="POST" action="{{ route('profile.email') }}" @submit="{{ $lockSubmit }}"
-                    class="space-y-3">
-                    @csrf
-                    @method('PUT')
-                    <div>
-                        <label for="email" class="{{ $label }}">Email baru</label>
-                        <input id="email" type="email" name="email" value="{{ old('email', $user->email) }}" required
-                            maxlength="255" autocomplete="email" class="{{ $input }}" />
-                        @error('email', 'email')
-                            <p class="{{ $error }}">{{ $message }}</p>
-                        @enderror
-                        <p class="{{ $hint }}">Link reset password dikirim ke email ini.</p>
-                    </div>
-                    <div>
-                        <label for="email_password" class="{{ $label }}">Password saat ini</label>
-                        <input id="email_password" type="password" name="current_password" required
-                            autocomplete="current-password" class="{{ $input }}" />
-                        @error('current_password', 'email')
-                            <p class="{{ $error }}">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div class="flex justify-end gap-2 pt-1">
-                        <button type="button" @click="open = false" class="{{ $ghost }}">Batal</button>
-                        <button type="submit" class="{{ $primary }}">Simpan email</button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        {{-- No. WhatsApp (verifikasi OTP ke nomor baru) --}}
-        <section
-            x-data="{
-                open: {{ $pendingPhone || $errors->hasBag('phone') || $errors->hasBag('otp') ? 'true' : 'false' }},
-                resend: {{ (int) ($pendingPhone['resend_in'] ?? 0) }},
-                init() { setInterval(() => { if (this.resend > 0) this.resend--; }, 1000); }
-            }"
-            class="{{ $panel }}">
-            <div class="flex items-center justify-between gap-3 px-5 py-4">
-                <div class="min-w-0">
-                    <h2 class="text-sm font-semibold text-[var(--color-navy-900)]">Nomor WhatsApp</h2>
-                    <p class="text-sm text-[var(--color-slate-500)] truncate">{{ $user->no_wa ?: 'Belum diisi' }}</p>
-                </div>
-                <button type="button" @click="open = !open" :aria-expanded="open" class="{{ $toggle }}"
-                    x-text="open ? 'Tutup' : 'Ubah'">Ubah</button>
-            </div>
-            <div x-show="open" style="display: none;" x-transition
-                class="px-5 pb-5 pt-4 border-t border-[var(--color-slate-100)]">
-
-                @if ($pendingPhone)
-                    {{-- Langkah 2: masukkan kode --}}
-                    <p class="text-sm text-[var(--color-slate-700)] mb-3">
-                        Kode OTP 6 angka dikirim ke WhatsApp <span
-                            class="font-semibold">{{ $pendingPhone['masked'] }}</span>. Berlaku 5 menit. Nomor di
-                        akunmu baru berganti setelah kode benar.
-                    </p>
-                    <form method="POST" action="{{ route('profile.phone.verify') }}" @submit="{{ $lockSubmit }}">
-                        @csrf
-                        <label for="kode" class="{{ $label }}">Kode OTP</label>
-                        <input id="kode" type="text" name="kode" inputmode="numeric" pattern="[0-9]*" maxlength="6"
-                            autocomplete="one-time-code" required placeholder="123456"
-                            class="{{ $input }} tracking-[0.3em] sm:max-w-[12rem]" />
-                        @error('kode', 'otp')
-                            <p class="{{ $error }}">{{ $message }}</p>
-                        @enderror
-                        <div class="mt-4">
-                            <button type="submit" class="{{ $primary }} w-full sm:w-auto">Verifikasi nomor</button>
+            {{-- Identitas. Peran dan bidang tidak bisa diubah sendiri. --}}
+            <aside class="lg:sticky lg:top-6 lg:self-start">
+                <div class="flex items-center gap-4 lg:block">
+                    <span aria-hidden="true"
+                        class="w-16 h-16 lg:w-20 lg:h-20 rounded-2xl bg-gradient-to-br from-[var(--color-blue-500)] to-[var(--color-blue-600)] flex items-center justify-center shrink-0">
+                        <span
+                            class="text-white text-2xl lg:text-3xl font-bold font-[var(--font-heading)]">{{ $initials }}</span>
+                    </span>
+                    <div class="min-w-0 lg:mt-4">
+                        <p class="text-lg font-semibold text-[var(--color-navy-900)] break-words">{{ $user->name }}
+                        </p>
+                        <div class="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+                            <span
+                                class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border border-[var(--color-blue-500)]/20 bg-[var(--color-blue-500)]/5 text-[var(--color-blue-600)]">{{ ucfirst($user->peran) }}</span>
+                            @if ($user->unit)
+                                <span
+                                    class="text-sm text-[var(--color-slate-500)]">{{ $user->unit->nama_unit }}</span>
+                            @endif
                         </div>
-                    </form>
-
-                    <div class="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-[var(--color-slate-100)]">
-                        <form method="POST" action="{{ route('profile.phone.otp') }}" @submit="{{ $lockSubmit }}">
-                            @csrf
-                            <input type="hidden" name="no_wa" value="{{ $pendingPhone['phone'] }}" />
-                            <button type="submit" :disabled="resend > 0" class="{{ $ghost }}"
-                                x-text="resend > 0 ? 'Kirim ulang kode (' + resend + ' dtk)' : 'Kirim ulang kode'">Kirim
-                                ulang kode</button>
-                        </form>
-                        <form method="POST" action="{{ route('profile.phone.cancel') }}">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="{{ $ghost }}">Pakai nomor lain</button>
-                        </form>
                     </div>
-                    @error('no_wa', 'phone')
-                        <p class="{{ $error }}">{{ $message }}</p>
-                    @enderror
-                @else
-                    {{-- Langkah 1: nomor baru --}}
-                    <form method="POST" action="{{ route('profile.phone.otp') }}" @submit="{{ $lockSubmit }}">
-                        @csrf
-                        <label for="no_wa" class="{{ $label }}">Nomor WhatsApp baru</label>
-                        <input id="no_wa" type="tel" name="no_wa" value="{{ old('no_wa') }}" required maxlength="20"
-                            inputmode="tel" autocomplete="tel" placeholder="08123456789" class="{{ $input }}" />
-                        @error('no_wa', 'phone')
-                            <p class="{{ $error }}">{{ $message }}</p>
-                        @enderror
-                        <p class="{{ $hint }}">Kami kirim kode OTP ke nomor ini lewat WhatsApp untuk memastikan nomornya
-                            milikmu.</p>
-                        <div class="flex justify-end gap-2 mt-4">
-                            <button type="button" @click="open = false" class="{{ $ghost }}">Batal</button>
-                            <button type="submit" class="{{ $primary }}">Kirim kode OTP</button>
-                        </div>
-                    </form>
-                @endif
-            </div>
-        </section>
-
-        {{-- Password --}}
-        <section x-data="{ open: {{ $errors->hasBag('password') ? 'true' : 'false' }} }" class="{{ $panel }}">
-            <div class="flex items-center justify-between gap-3 px-5 py-4">
-                <div class="min-w-0">
-                    <h2 class="text-sm font-semibold text-[var(--color-navy-900)]">Password</h2>
-                    <p class="text-sm text-[var(--color-slate-500)]">Minimal 6 karakter</p>
                 </div>
-                <button type="button" @click="open = !open" :aria-expanded="open" class="{{ $toggle }}"
-                    x-text="open ? 'Tutup' : 'Ubah'">Ubah</button>
+                <p class="mt-4 text-sm text-[var(--color-slate-500)] max-w-[16rem]">Peran dan bidang diatur oleh
+                    agendaris.</p>
+            </aside>
+
+            <div class="min-w-0 space-y-8">
+
+                {{-- Informasi akun --}}
+                <section aria-labelledby="grup-akun">
+                    <h2 id="grup-akun" class="{{ $groupTitle }}">Informasi akun</h2>
+
+                    <div class="{{ $panel }}">
+
+                        {{-- Nama --}}
+                        <x-profile.row id="name" label="Nama lengkap">
+                            <x-slot:value><span class="block truncate"
+                                    title="{{ $user->name }}">{{ $user->name }}</span></x-slot:value>
+
+                            <form method="POST" action="{{ route('profile.name') }}" class="max-w-md space-y-4"
+                                x-data="{ busy: false }" @submit="busy = true" @pageshow.window="busy = false">
+                                @csrf
+                                @method('PUT')
+                                <x-profile.field id="name" name="name" label="Nama lengkap" bag="name"
+                                    :value="old('name', $user->name)" required maxlength="255" autocomplete="name" />
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <button type="submit" :disabled="busy" class="{{ $primary }}"
+                                        x-text="busy ? 'Menyimpan...' : 'Simpan nama'">Simpan nama</button>
+                                    <button type="button" @click="open = null"
+                                        class="{{ $ghost }}">Batal</button>
+                                </div>
+                            </form>
+                        </x-profile.row>
+
+                        {{-- Username --}}
+                        <x-profile.row id="username" label="Username">
+                            <x-slot:value><span class="block truncate"
+                                    title="{{ $user->username }}">{{ $user->username }}</span></x-slot:value>
+
+                            <form method="POST" action="{{ route('profile.username') }}" class="max-w-md space-y-4"
+                                x-data="{ busy: false }" @submit="busy = true" @pageshow.window="busy = false">
+                                @csrf
+                                @method('PUT')
+                                <x-profile.field id="username" name="username" label="Username baru" bag="username"
+                                    :value="old('username', $user->username)" required maxlength="50" pattern="\S+"
+                                    title="Username tidak boleh mengandung spasi" autocomplete="username"
+                                    autocapitalize="none" spellcheck="false"
+                                    hint="Dipakai untuk login. Sesi ini tetap aktif; pakai username baru saat login berikutnya." />
+                                <x-profile.field id="username_password" name="current_password"
+                                    label="Password saat ini" bag="username" type="password" required
+                                    autocomplete="current-password" />
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <button type="submit" :disabled="busy" class="{{ $primary }}"
+                                        x-text="busy ? 'Menyimpan...' : 'Ganti username'">Ganti username</button>
+                                    <button type="button" @click="open = null"
+                                        class="{{ $ghost }}">Batal</button>
+                                </div>
+                            </form>
+                        </x-profile.row>
+
+                        {{-- Email --}}
+                        <x-profile.row id="email" label="Email">
+                            <x-slot:value>
+                                @if ($user->email)
+                                    <span class="block truncate"
+                                        title="{{ $user->email }}">{{ $user->email }}</span>
+                                @else
+                                    <span class="font-normal text-[var(--color-slate-500)]">Belum diisi</span>
+                                @endif
+                            </x-slot:value>
+
+                            <form method="POST" action="{{ route('profile.email') }}" class="max-w-md space-y-4"
+                                x-data="{ busy: false }" @submit="busy = true" @pageshow.window="busy = false">
+                                @csrf
+                                @method('PUT')
+                                <x-profile.field id="email" name="email" label="Email baru" bag="email"
+                                    type="email" :value="old('email', $user->email)" required maxlength="255"
+                                    autocomplete="email" hint="Link reset password dikirim ke email ini." />
+                                <x-profile.field id="email_password" name="current_password"
+                                    label="Password saat ini" bag="email" type="password" required
+                                    autocomplete="current-password" />
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <button type="submit" :disabled="busy" class="{{ $primary }}"
+                                        x-text="busy ? 'Menyimpan...' : 'Simpan email'">Simpan email</button>
+                                    <button type="button" @click="open = null"
+                                        class="{{ $ghost }}">Batal</button>
+                                </div>
+                            </form>
+                        </x-profile.row>
+
+                        {{-- Nomor WhatsApp: nomor baru diverifikasi lewat OTP sebelum dipasang --}}
+                        <x-profile.row id="phone" label="Nomor WhatsApp">
+                            <x-slot:value>
+                                @if ($user->no_wa)
+                                    <span class="block truncate">{{ $user->no_wa }}</span>
+                                @else
+                                    <span class="block font-normal text-[var(--color-slate-500)]">Belum diisi</span>
+                                @endif
+                                @if ($pendingPhone)
+                                    <span
+                                        class="block text-xs font-normal text-[var(--color-warning)]">Menunggu kode OTP untuk nomor baru</span>
+                                @endif
+                            </x-slot:value>
+
+                            <div class="max-w-md">
+                                @if ($pendingPhone)
+                                    {{-- Langkah 2: masukkan kode --}}
+                                    <p class="text-sm text-[var(--color-slate-700)] mb-4">
+                                        Kode OTP 6 angka dikirim ke WhatsApp <span
+                                            class="font-semibold">{{ $pendingPhone['masked'] }}</span>. Berlaku 5
+                                        menit. Nomor di akunmu baru berganti setelah kode benar.
+                                    </p>
+
+                                    <form method="POST" action="{{ route('profile.phone.verify') }}"
+                                        class="space-y-4" x-data="{ busy: false }" @submit="busy = true"
+                                        @pageshow.window="busy = false">
+                                        @csrf
+                                        <x-profile.field id="kode" name="kode" label="Kode OTP" bag="otp"
+                                            inputmode="numeric" pattern="[0-9]*" maxlength="6"
+                                            autocomplete="one-time-code" required placeholder="123456"
+                                            class="tracking-[0.3em] tabular-nums sm:max-w-[12rem]" />
+                                        <button type="submit" :disabled="busy"
+                                            class="{{ $primary }} w-full sm:w-auto"
+                                            x-text="busy ? 'Memeriksa...' : 'Verifikasi nomor'">Verifikasi nomor</button>
+                                    </form>
+
+                                    <div class="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-[color:var(--color-slate-200)]"
+                                        x-data="{
+                                            resend: {{ (int) ($pendingPhone['resend_in'] ?? 0) }},
+                                            init() { setInterval(() => { if (this.resend > 0) this.resend--; }, 1000); }
+                                        }">
+                                        <form method="POST" action="{{ route('profile.phone.otp') }}">
+                                            @csrf
+                                            <input type="hidden" name="no_wa" value="{{ $pendingPhone['phone'] }}" />
+                                            <button type="submit" :disabled="resend > 0" class="{{ $ghost }}"
+                                                x-text="resend > 0 ? 'Kirim ulang kode (' + resend + ' dtk)' : 'Kirim ulang kode'">Kirim
+                                                ulang kode</button>
+                                        </form>
+                                        <form method="POST" action="{{ route('profile.phone.cancel') }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="{{ $ghost }}">Pakai nomor
+                                                lain</button>
+                                        </form>
+                                    </div>
+                                    @error('no_wa', 'phone')
+                                        <p class="text-xs text-[var(--color-danger)] mt-2">{{ $message }}</p>
+                                    @enderror
+                                @else
+                                    {{-- Langkah 1: nomor baru --}}
+                                    <form method="POST" action="{{ route('profile.phone.otp') }}" class="space-y-4"
+                                        x-data="{ busy: false }" @submit="busy = true"
+                                        @pageshow.window="busy = false">
+                                        @csrf
+                                        <x-profile.field id="no_wa" name="no_wa" label="Nomor WhatsApp baru"
+                                            bag="phone" type="tel" :value="old('no_wa')" required maxlength="20"
+                                            inputmode="tel" autocomplete="tel" placeholder="08123456789"
+                                            hint="Notifikasi disposisi dan pengingat dikirim ke nomor ini. Kami kirim kode OTP lewat WhatsApp untuk memastikan nomornya milikmu." />
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <button type="submit" :disabled="busy" class="{{ $primary }}"
+                                                x-text="busy ? 'Mengirim...' : 'Kirim kode OTP'">Kirim kode
+                                                OTP</button>
+                                            <button type="button" @click="open = null"
+                                                class="{{ $ghost }}">Batal</button>
+                                        </div>
+                                    </form>
+                                @endif
+                            </div>
+                        </x-profile.row>
+                    </div>
+                </section>
+
+                {{-- Keamanan --}}
+                <section aria-labelledby="grup-keamanan">
+                    <h2 id="grup-keamanan" class="{{ $groupTitle }}">Keamanan</h2>
+
+                    <div class="{{ $panel }}">
+                        <x-profile.row id="password" label="Password">
+                            <x-slot:value><span aria-hidden="true" class="tracking-widest">••••••••</span><span
+                                    class="sr-only">Disembunyikan</span></x-slot:value>
+
+                            <form method="POST" action="{{ route('profile.password') }}" class="max-w-md space-y-4"
+                                x-data="{ busy: false, pw: '', pw2: '' }" @submit="busy = true"
+                                @pageshow.window="busy = false">
+                                @csrf
+                                @method('PUT')
+                                <x-profile.field id="current_password" name="current_password"
+                                    label="Password saat ini" bag="password" type="password" required
+                                    autocomplete="current-password" />
+
+                                <x-profile.field id="password" name="password" label="Password baru" bag="password"
+                                    type="password" required minlength="6" autocomplete="new-password"
+                                    x-model="pw">
+                                    <p class="flex items-center gap-1.5 text-xs mt-1.5"
+                                        :class="pw.length >= 6 ? 'text-[var(--color-success)]' :
+                                            'text-[var(--color-slate-500)]'">
+                                        <svg x-show="pw.length >= 6" style="display: none;"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5"
+                                            aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="m4.5 12.75 6 6 9-13.5" />
+                                        </svg>
+                                        Minimal 6 karakter
+                                    </p>
+                                </x-profile.field>
+
+                                <x-profile.field id="password_confirmation" name="password_confirmation"
+                                    label="Ulangi password baru" bag="password" type="password" required
+                                    autocomplete="new-password" x-model="pw2">
+                                    <p x-show="pw2 && pw !== pw2" style="display: none;"
+                                        class="text-xs text-[var(--color-danger)] mt-1.5">Konfirmasi belum sama dengan
+                                        password baru.</p>
+                                </x-profile.field>
+
+                                <p class="text-xs text-[var(--color-slate-500)]">Perangkat lain yang sedang login
+                                    dengan akun ini akan dikeluarkan.</p>
+
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <button type="submit" :disabled="busy" class="{{ $primary }}"
+                                        x-text="busy ? 'Menyimpan...' : 'Ganti password'">Ganti password</button>
+                                    <button type="button" @click="open = null"
+                                        class="{{ $ghost }}">Batal</button>
+                                </div>
+                            </form>
+                        </x-profile.row>
+                    </div>
+                </section>
             </div>
-            <div x-show="open" style="display: none;" x-transition
-                class="px-5 pb-5 pt-4 border-t border-[var(--color-slate-100)]">
-                <form method="POST" action="{{ route('profile.password') }}" @submit="{{ $lockSubmit }}"
-                    class="space-y-3">
-                    @csrf
-                    @method('PUT')
-                    <div>
-                        <label for="current_password" class="{{ $label }}">Password saat ini</label>
-                        <input id="current_password" type="password" name="current_password" required
-                            autocomplete="current-password" class="{{ $input }}" />
-                        @error('current_password', 'password')
-                            <p class="{{ $error }}">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="password" class="{{ $label }}">Password baru</label>
-                        <input id="password" type="password" name="password" required minlength="6"
-                            autocomplete="new-password" class="{{ $input }}" />
-                        @error('password', 'password')
-                            <p class="{{ $error }}">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    <div>
-                        <label for="password_confirmation" class="{{ $label }}">Ulangi password baru</label>
-                        <input id="password_confirmation" type="password" name="password_confirmation" required
-                            autocomplete="new-password" class="{{ $input }}" />
-                    </div>
-                    <p class="{{ $hint }}">Perangkat lain yang sedang login dengan akun ini akan dikeluarkan.</p>
-                    <div class="flex justify-end gap-2 pt-1">
-                        <button type="button" @click="open = false" class="{{ $ghost }}">Batal</button>
-                        <button type="submit" class="{{ $primary }}">Ganti password</button>
-                    </div>
-                </form>
-            </div>
-        </section>
+        </div>
     </div>
 </x-layouts.app>
