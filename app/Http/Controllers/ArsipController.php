@@ -102,7 +102,7 @@ class ArsipController extends Controller
 
         abort_unless($surat->status_arsip === 'perlu_ditinjau', 422, 'Surat ini bukan status perlu ditinjau.');
 
-        $surat->update(['status_arsip' => 'permanen', 'nasib_akhir' => 'permanen']);
+        $surat->update(['status_arsip' => 'permanen']);
 
         return redirect()->route('arsip.index', ['jenis' => $jenis, 'tab' => 'tinjau'])
             ->with('success', 'Arsip ditetapkan permanen.');
@@ -119,7 +119,7 @@ class ArsipController extends Controller
 
         abort_unless($surat->status_arsip === 'perlu_ditinjau', 422, 'Surat ini bukan status perlu ditinjau.');
 
-        $surat->update(['status_arsip' => 'menunggu_musnah', 'nasib_akhir' => 'musnah']);
+        $surat->update(['status_arsip' => 'menunggu_musnah']);
 
         return redirect()->route('arsip.index', ['jenis' => $jenis, 'tab' => 'tinjau'])
             ->with('success', 'Surat ditandai untuk dimusnahkan, menunggu persetujuan.');

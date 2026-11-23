@@ -3,15 +3,58 @@
     themes: light --default;
 }
 
+/* Tema gelap daisyUI (dipasang lewat atribut data-theme="dark" di <html>) */
+@plugin "daisyui/theme" {
+    name: "dark";
+    default: false;
+    prefersdark: false;
+    color-scheme: dark;
+
+    --color-base-100: #111d33;
+    --color-base-200: #0b1424;
+    --color-base-300: #1b2a44;
+    --color-base-content: #e2e8f0;
+
+    --color-primary: #3b82f6;
+    --color-primary-content: #ffffff;
+    --color-secondary: #64748b;
+    --color-secondary-content: #ffffff;
+    --color-accent: #60a5fa;
+    --color-accent-content: #0b1424;
+    --color-neutral: #1e293b;
+    --color-neutral-content: #e2e8f0;
+
+    --color-info: #3b82f6;
+    --color-info-content: #ffffff;
+    --color-success: #10b981;
+    --color-success-content: #ffffff;
+    --color-warning: #f59e0b;
+    --color-warning-content: #1f1300;
+    --color-error: #ef4444;
+    --color-error-content: #ffffff;
+
+    --radius-selector: 0.5rem;
+    --radius-field: 0.5rem;
+    --radius-box: 0.75rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 0;
+    --noise: 0;
+}
+
+/* Varian dark: (dipakai misal `dark:hidden`) */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
 @theme {
-    --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif,
-        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-        "Noto Color Emoji";
+    --font-sans:
+        "DM Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-heading: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
 
     /* Color Palette - Ocean Trust */
@@ -39,4 +82,98 @@
     --color-warning: #f59e0b;
     --color-danger: #ef4444;
     --color-info: #3b82f6;
+}
+
+/* ==========================================================================
+   DARK MODE
+   Hampir semua warna di view memakai var(--color-*) di atas, jadi cukup
+   membalik palet netralnya saat <html data-theme="dark">. Warna biru/aksi
+   tetap vivid. Aturan ini sengaja tidak masuk @layer supaya menang atas
+   utility Tailwind yang hardcode (bg-white dll).
+   ========================================================================== */
+:root[data-theme="dark"] {
+    --color-navy-900: #f1f5f9;
+    --color-navy-800: #e2e8f0;
+    --color-navy-700: #cbd5e1;
+    --color-navy-600: #94a3b8;
+
+    --color-blue-600: #5b9bf8;
+    --color-blue-100: #1c3558;
+    --color-blue-50: #14253f;
+
+    --color-slate-900: #f8fafc;
+    --color-slate-700: #cbd5e1;
+    --color-slate-600: #b2bfd2;
+    --color-slate-500: #97a6bd;
+    --color-slate-400: #7b8ba6;
+    --color-slate-300: #3f5379;
+    --color-slate-200: #263754;
+    --color-slate-100: #1b2a44;
+    --color-slate-50: #16233a;
+}
+
+/* Permukaan "putih" (kartu, input, modal, dropdown) -> warna surface tema gelap */
+:root[data-theme="dark"] .bg-white {
+    background-color: var(--color-base-100);
+}
+
+:root[data-theme="dark"] .bg-white\/80 {
+    background-color: color-mix(
+        in oklab,
+        var(--color-base-100) 80%,
+        transparent
+    );
+}
+
+:root[data-theme="dark"] .border-white\/40 {
+    border-color: color-mix(in oklab, var(--color-slate-200) 60%, transparent);
+}
+
+:root[data-theme="dark"] .ring-white {
+    --tw-ring-color: var(--color-base-100);
+}
+
+/* Latar merah muda (tombol hapus / kotak konfirmasi) */
+:root[data-theme="dark"] .bg-red-50,
+:root[data-theme="dark"] .hover\:bg-red-50:hover {
+    background-color: color-mix(in oklab, var(--color-danger) 16%, transparent);
+}
+
+/* Chip/tab aktif memakai navy-700 sebagai LATAR dengan text-white. Di tema gelap navy-700
+   dibalik jadi abu terang (karena dipakai juga sebagai warna teks), jadi latar solidnya
+   dikunci ke biru tua yang kontras dengan teks putih. */
+:root[data-theme="dark"] .bg-\[var\(--color-navy-700\)\] {
+    background-color: #2f5f9e;
+}
+
+/* Teks kuning (--color-warning #f59e0b) kontrasnya rendah di atas putih/abu muda.
+   Untuk TEKS dipakai amber yang lebih gelap; latar/ikon solid tetap memakai kuning aslinya. */
+.text-\[var\(--color-warning\)\] {
+    color: #b45309;
+}
+
+:root[data-theme="dark"] .text-\[var\(--color-warning\)\] {
+    color: #fbbf24;
+}
+
+/* Sama seperti kuning: teks hijau (--color-success #10b981) kontrasnya rendah di atas putih.
+   Untuk TEKS dipakai hijau yang lebih gelap; latar/ikon solid tetap hijau aslinya. */
+.text-\[var\(--color-success\)\] {
+    color: #047857;
+}
+
+:root[data-theme="dark"] .text-\[var\(--color-success\)\] {
+    color: #34d399;
+}
+
+/* Teks merah (--color-danger #ef4444) kontrasnya ~3,7:1 di atas putih (di bawah batas 4,5:1).
+   Untuk TEKS dipakai merah yang lebih gelap, termasuk saat hover; latar/ikon solid tetap merah aslinya. */
+.text-\[var\(--color-danger\)\],
+.hover\:text-\[var\(--color-danger\)\]:hover {
+    color: #cc1f1f;
+}
+
+:root[data-theme="dark"] .text-\[var\(--color-danger\)\],
+:root[data-theme="dark"] .hover\:text-\[var\(--color-danger\)\]:hover {
+    color: #f87171;
 }

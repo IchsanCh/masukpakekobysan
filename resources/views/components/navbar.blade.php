@@ -5,6 +5,8 @@
 
     <div class="flex-1"></div>
 
+    <x-theme-toggle class="mr-1" />
+
     <div class="lg:hidden">
         <div class="dropdown dropdown-end">
             <div tabindex="0" role="button" class="btn btn-ghost btn-sm btn-circle">

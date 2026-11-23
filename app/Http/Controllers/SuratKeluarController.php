@@ -85,6 +85,10 @@ class SuratKeluarController extends Controller
 
         $validated['dibuat_oleh'] = $request->user()->id;
 
+        // Status arsip ditentukan sistem (bukan input user): surat baru selalu mulai 'aktif',
+        // lalu berubah otomatis oleh arsip:cek-retensi / proses di halaman Arsip.
+        $validated['status_arsip'] = 'aktif';
+
         SuratKeluar::create($validated);
 
         return redirect()->route('surat-keluar.index')
@@ -169,12 +173,10 @@ class SuratKeluarController extends Controller
             'kepada' => 'required|string|max:255',
             'pengelola' => 'nullable|string|max:255',
             'lampiran' => 'nullable|string|max:255',
-            'referensi_retensi_id' => 'nullable|exists:referensi_retensis,id',
-            'retensi_tahun' => 'required|integer|min:0',
-            'status_arsip' => 'required|in:aktif,inaktif,perlu_ditinjau,menunggu_musnah,musnah,permanen',
-            'nasib_akhir' => 'nullable|in:musnah,permanen,dinilai_kembali',
+            'referensi_retensi_id' => 'required|exists:referensi_retensis,id',
             'file_surat' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:' . self::MAX_FILE_KB,
         ], [
+            'referensi_retensi_id.required' => 'Referensi retensi wajib dipilih.',
             'file_surat.max' => 'Ukuran file maksimal ' . (self::MAX_FILE_KB / 1024) . ' MB.',
             'file_surat.mimes' => 'File harus berformat PDF, JPG, atau PNG.',
         ]);

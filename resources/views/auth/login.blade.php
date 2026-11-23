@@ -1,5 +1,5 @@
 <x-layouts.guest title="Login">
-    <div class="min-h-screen flex flex-col lg:flex-row bg-[var(--color-slate-900)]">
+    <div class="min-h-screen flex flex-col lg:flex-row bg-[#0f172a]">
         {{-- Left - Form --}}
         <div
             class="flex-1 flex items-center justify-center p-6 sm:p-10
@@ -61,7 +61,7 @@
 
         {{-- Right - Branding (hidden on mobile, shown on lg+) --}}
         <div
-            class="hidden lg:flex flex-[1.4] bg-[var(--color-navy-900)] flex-col justify-between p-10 relative overflow-hidden">
+            class="hidden lg:flex flex-[1.4] bg-[#0b192c] flex-col justify-between p-10 relative overflow-hidden">
 
             {{-- Geometric accents --}}
             <div

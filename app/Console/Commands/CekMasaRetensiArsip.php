@@ -116,7 +116,7 @@ class CekMasaRetensiArsip extends Command
 
         match ($nasibDefault) {
             'musnah' => $surat->update(['status_arsip' => 'menunggu_musnah']),
-            'permanen' => $surat->update(['status_arsip' => 'permanen', 'nasib_akhir' => 'permanen']),
+            'permanen' => $surat->update(['status_arsip' => 'permanen']),
             'dinilai_kembali' => $surat->update(['status_arsip' => 'perlu_ditinjau']),
             default => null,
         };

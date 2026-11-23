@@ -1,5 +1,5 @@
 <x-layouts.guest title="Reset Password">
-    <div class="min-h-screen flex flex-col lg:flex-row bg-[var(--color-slate-900)]">
+    <div class="min-h-screen flex flex-col lg:flex-row bg-[#0f172a]">
 
         {{-- Left - Form --}}
         <div
@@ -52,7 +52,7 @@
 
         {{-- Right - Branding --}}
         <div
-            class="hidden lg:flex flex-[1.4] bg-[var(--color-navy-900)] flex-col justify-between p-10 relative overflow-hidden">
+            class="hidden lg:flex flex-[1.4] bg-[#0b192c] flex-col justify-between p-10 relative overflow-hidden">
 
             <div
                 class="absolute -top-20 -left-20 w-[300px] h-[300px] border-[40px] border-[var(--color-blue-500)]/[0.07] rounded-full">

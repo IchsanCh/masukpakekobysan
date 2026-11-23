@@ -18,10 +18,8 @@ class SuratMasuk extends Model
         'sifat_surat',
         'file_surat',
         'referensi_retensi_id',
-        'retensi_tahun',
         'status_disposisi',
         'status_arsip',
-        'nasib_akhir',
         'dibuat_oleh',
     ];
 

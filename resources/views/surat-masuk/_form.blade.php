@@ -40,10 +40,6 @@
             this.previewType = null;
             this.fileSizeError = false;
             this.hasExistingFile = @js((bool) $existingFileUrl);
-        },
-        updateRetensiTahun(el) {
-            const opt = el.options[el.selectedIndex];
-            if (opt && opt.dataset.masaAktif) { this.$refs.retensiTahunInput.value = opt.dataset.masaAktif; }
         }
     }" @submit="submitting = true">
     @csrf
@@ -150,39 +146,8 @@
                 class="font-[var(--font-heading)] text-sm font-bold text-[var(--color-navy-900)] uppercase tracking-wider">
                 Retensi &amp; Arsip</h3>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Referensi
-                        Retensi</label>
-                    <select name="referensi_retensi_id" @change="updateRetensiTahun($event.target)"
-                        class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[var(--color-slate-200)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all">
-                        <option value="">Tidak ada</option>
-                        @php $currentRetensiId = old('referensi_retensi_id', $suratMasuk->referensi_retensi_id ?? ''); @endphp
-                        @foreach ($retensis as $r)
-                            <option value="{{ $r->id }}" data-masa-aktif="{{ $r->masa_aktif }}"
-                                @selected((string) $currentRetensiId === (string) $r->id)>
-                                {{ $r->kode_klasifikasi }} —
-                                {{ \Illuminate\Support\Str::limit($r->nama_kegiatan, 40) }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <p class="text-[11px] text-[var(--color-slate-400)] mt-1">Pilih untuk mengisi otomatis masa retensi.
-                    </p>
-                    @error('referensi_retensi_id')
-                        <p class="text-xs text-[var(--color-danger)] mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Retensi (tahun)
-                        *</label>
-                    <input type="number" name="retensi_tahun" x-ref="retensiTahunInput" min="0" required
-                        value="{{ old('retensi_tahun', $suratMasuk->retensi_tahun ?? 2) }}"
-                        class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[var(--color-slate-200)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all" />
-                    @error('retensi_tahun')
-                        <p class="text-xs text-[var(--color-danger)] mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-            </div>
+            <x-retensi-select :retensis="$retensis"
+                :selected="old('referensi_retensi_id', $suratMasuk->referensi_retensi_id ?? '')" />
         </div>
 
         {{-- Right: File Upload + Preview --}}

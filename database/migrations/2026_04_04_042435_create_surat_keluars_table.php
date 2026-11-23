@@ -25,12 +25,9 @@ return new class () extends Migration {
 
             // Retensi & Arsip
             $table->foreignId('referensi_retensi_id')
-                  ->nullable()
                   ->constrained('referensi_retensis')
-                  ->nullOnDelete();
-            $table->unsignedInteger('retensi_tahun')->default(2);
+                  ->restrictOnDelete();
             $table->enum('status_arsip', ['aktif', 'inaktif', 'perlu_ditinjau', 'menunggu_musnah', 'musnah', 'permanen'])->default('aktif');
-            $table->enum('nasib_akhir', ['musnah', 'permanen', 'dinilai_kembali'])->nullable();
 
             // Relasi ke user yang input
             $table->foreignId('dibuat_oleh')

@@ -199,7 +199,7 @@
          ">
 
             <div x-show="open" x-transition.opacity
-                class="fixed inset-0 bg-[var(--color-navy-900)]/50 backdrop-blur-[2px] z-50" @click="open = false"></div>
+                class="fixed inset-0 bg-black/50 backdrop-blur-[2px] z-50" @click="open = false"></div>
             <div x-show="open" x-transition:enter="transition ease-out duration-200"
                 x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
                 x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100"

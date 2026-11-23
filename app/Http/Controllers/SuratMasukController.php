@@ -120,10 +120,10 @@ class SuratMasukController extends Controller
             'isi_ringkasan' => 'required|string',
             'pengirim' => 'required|string|max:255',
             'sifat_surat' => 'required|in:biasa,segera,sangat_segera,rahasia',
-            'referensi_retensi_id' => 'nullable|exists:referensi_retensis,id',
-            'retensi_tahun' => 'required|integer|min:0',
+            'referensi_retensi_id' => 'required|exists:referensi_retensis,id',
             'file_surat' => ($ignoreId ? 'nullable' : 'required') . '|file|mimes:pdf,jpg,jpeg,png|max:' . self::MAX_FILE_KB,
         ], [
+            'referensi_retensi_id.required' => 'Referensi retensi wajib dipilih.',
             'file_surat.max' => 'Ukuran file maksimal ' . (self::MAX_FILE_KB / 1024) . ' MB.',
             'file_surat.mimes' => 'File harus berformat PDF, JPG, atau PNG.',
         ]);

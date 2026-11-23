@@ -229,7 +229,7 @@
                                         title="Coret (~teks~)">S</button>
                                 </div>
                                 <textarea name="values[{{ $key }}]" x-ref="ta_{{ $key }}" x-model="templates['{{ $key }}']"
-                                    rows="7"
+                                    rows="12"
                                     class="w-full px-3.5 py-2.5 text-sm font-mono rounded-xl border border-[var(--color-slate-200)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all resize-y"></textarea>
                                 <p class="text-[11px] text-[var(--color-slate-400)] mt-1.5">
                                     <span class="font-mono">*tebal*</span> · <span class="font-mono">_miring_</span> ·

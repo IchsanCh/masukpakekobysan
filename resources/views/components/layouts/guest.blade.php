@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }}</title>
+    <x-theme-init />
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap"
         rel="stylesheet" />
@@ -14,6 +15,10 @@
 </head>
 
 <body x-data>
+    <div class="fixed top-3 right-3 z-50">
+        <x-theme-toggle class="bg-[var(--color-slate-50)]/70 backdrop-blur" />
+    </div>
+
     {{ $slot }}
 </body>
 

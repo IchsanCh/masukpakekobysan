@@ -17,9 +17,7 @@ class SuratKeluar extends Model
         'lampiran',
         'file_surat',
         'referensi_retensi_id',
-        'retensi_tahun',
         'status_arsip',
-        'nasib_akhir',
         'dibuat_oleh',
     ];
 

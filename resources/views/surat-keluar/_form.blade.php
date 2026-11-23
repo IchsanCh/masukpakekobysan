@@ -54,10 +54,6 @@
             this.previewType = null;
             this.fileSizeError = false;
             this.hasExistingFile = @js((bool) $existingFileUrl);
-        },
-        updateRetensiTahun(el) {
-            const opt = el.options[el.selectedIndex];
-            if (opt && opt.dataset.masaAktif) { this.$refs.retensiTahunInput.value = opt.dataset.masaAktif; }
         }
     }" @submit="submitting = true">
     @csrf
@@ -152,75 +148,8 @@
                 class="font-[var(--font-heading)] text-sm font-bold text-[var(--color-navy-900)] uppercase tracking-wider">
                 Retensi &amp; Arsip</h3>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Referensi
-                        Retensi</label>
-                    <select name="referensi_retensi_id" @change="updateRetensiTahun($event.target)"
-                        class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[var(--color-slate-200)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all">
-                        <option value="">Tidak ada</option>
-                        @php $currentRetensiId = old('referensi_retensi_id', $suratKeluar->referensi_retensi_id ?? ''); @endphp
-                        @foreach ($retensis as $r)
-                            <option value="{{ $r->id }}" data-masa-aktif="{{ $r->masa_aktif }}"
-                                @selected((string) $currentRetensiId === (string) $r->id)>
-                                {{ $r->kode_klasifikasi }} —
-                                {{ \Illuminate\Support\Str::limit($r->nama_kegiatan, 40) }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <p class="text-[11px] text-[var(--color-slate-400)] mt-1">Pilih untuk mengisi otomatis masa retensi.
-                    </p>
-                    @error('referensi_retensi_id')
-                        <p class="text-xs text-[var(--color-danger)] mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Retensi (tahun)
-                        *</label>
-                    <input type="number" name="retensi_tahun" x-ref="retensiTahunInput" min="0" required
-                        value="{{ old('retensi_tahun', $suratKeluar->retensi_tahun ?? 2) }}"
-                        class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[var(--color-slate-200)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all" />
-                    @error('retensi_tahun')
-                        <p class="text-xs text-[var(--color-danger)] mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Status Arsip *</label>
-                    <select name="status_arsip" required
-                        class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[var(--color-slate-200)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all">
-                        @php $currentStatusArsip = old('status_arsip', $suratKeluar->status_arsip ?? 'aktif'); @endphp
-                        <option value="aktif" @selected($currentStatusArsip === 'aktif')>Aktif</option>
-                        <option value="inaktif" @selected($currentStatusArsip === 'inaktif')>Inaktif</option>
-                        <option value="perlu_ditinjau" @selected($currentStatusArsip === 'perlu_ditinjau')>Perlu Ditinjau</option>
-                        <option value="menunggu_musnah" @selected($currentStatusArsip === 'menunggu_musnah')>Menunggu Persetujuan Musnah</option>
-                        <option value="permanen" @selected($currentStatusArsip === 'permanen')>Permanen</option>
-                        <option value="musnah" @selected($currentStatusArsip === 'musnah')>Musnah</option>
-                    </select>
-                    @error('status_arsip')
-                        <p class="text-xs text-[var(--color-danger)] mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Nasib Akhir</label>
-                    <select name="nasib_akhir"
-                        class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[var(--color-slate-200)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all">
-                        @php $currentNasibAkhir = old('nasib_akhir', $suratKeluar->nasib_akhir ?? ''); @endphp
-                        <option value="">Belum ditentukan</option>
-                        <option value="permanen" @selected($currentNasibAkhir === 'permanen')>Permanen</option>
-                        <option value="musnah" @selected($currentNasibAkhir === 'musnah')>Musnah</option>
-                        <option value="dinilai_kembali" @selected($currentNasibAkhir === 'dinilai_kembali')>Dinilai
-                            Kembali</option>
-                    </select>
-                    <p class="text-[11px] text-[var(--color-slate-400)] mt-1">Ditentukan belakangan saat masa retensi
-                        habis.</p>
-                    @error('nasib_akhir')
-                        <p class="text-xs text-[var(--color-danger)] mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-            </div>
+            <x-retensi-select :retensis="$retensis"
+                :selected="old('referensi_retensi_id', $suratKeluar->referensi_retensi_id ?? '')" />
         </div>
 
         {{-- Right: File Upload + Preview --}}
