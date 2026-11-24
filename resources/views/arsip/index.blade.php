@@ -57,7 +57,7 @@
         <a href="{{ route('arsip.index', ['tab' => 'riwayat']) }}"
             class="shrink-0 px-4 py-2 rounded-xl text-sm font-medium transition-colors
                   {{ $tab === 'riwayat' ? 'bg-[var(--color-blue-500)] text-white' : 'bg-white border border-[var(--color-slate-200)] text-[var(--color-slate-600)] hover:bg-[var(--color-slate-50)]' }}">
-            Riwayat Pemusnahan
+            Riwayat Keputusan
         </a>
     </div>
 
@@ -82,7 +82,7 @@
                 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_28px_-10px_rgba(15,23,42,0.10)] overflow-hidden">
 
         {{-- Advanced filter --}}
-        <div x-data="{ open: {{ request()->hasAny(['search','status_arsip','tanggal_dari','tanggal_sampai','jenis_log']) ? 'true' : 'false' }} }"
+        <div x-data="{ open: {{ request()->hasAny(['search','status_arsip','tanggal_dari','tanggal_sampai','jenis_log','keputusan_log']) ? 'true' : 'false' }} }"
             class="border-b border-[var(--color-slate-100)] bg-[var(--color-slate-50)]/50">
             <button type="button" @click="open = !open"
                 class="w-full flex items-center justify-between px-5 py-3 text-sm font-medium text-[var(--color-slate-600)]">
@@ -129,6 +129,15 @@
 
                     @if ($tab === 'riwayat')
                         <div>
+                            <label class="block text-[11px] font-medium text-[var(--color-slate-500)] mb-1">Keputusan</label>
+                            <select name="keputusan_log"
+                                class="px-3 py-2 text-sm rounded-xl border border-[var(--color-slate-200)] bg-white focus:outline-none focus:border-[var(--color-blue-500)]">
+                                <option value="">Semua</option>
+                                <option value="musnah" @selected(request('keputusan_log') === 'musnah')>Dimusnahkan</option>
+                                <option value="permanen" @selected(request('keputusan_log') === 'permanen')>Ditetapkan Permanen</option>
+                            </select>
+                        </div>
+                        <div>
                             <label class="block text-[11px] font-medium text-[var(--color-slate-500)] mb-1">Jenis</label>
                             <select name="jenis_log"
                                 class="px-3 py-2 text-sm rounded-xl border border-[var(--color-slate-200)] bg-white focus:outline-none focus:border-[var(--color-blue-500)]">
@@ -142,20 +151,20 @@
 
                     <div>
                         <label class="block text-[11px] font-medium text-[var(--color-slate-500)] mb-1">
-                            {{ $tab === 'riwayat' ? 'Dimusnahkan Dari' : 'Tanggal Surat Dari' }}</label>
+                            {{ $tab === 'riwayat' ? 'Keputusan Dari' : 'Tanggal Surat Dari' }}</label>
                         <input type="date" name="tanggal_dari" value="{{ request('tanggal_dari') }}"
                             class="px-3 py-2 text-sm rounded-xl border border-[var(--color-slate-200)] bg-white focus:outline-none focus:border-[var(--color-blue-500)]" />
                     </div>
                     <div>
                         <label class="block text-[11px] font-medium text-[var(--color-slate-500)] mb-1">
-                            {{ $tab === 'riwayat' ? 'Dimusnahkan Sampai' : 'Tanggal Surat Sampai' }}</label>
+                            {{ $tab === 'riwayat' ? 'Keputusan Sampai' : 'Tanggal Surat Sampai' }}</label>
                         <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}"
                             class="px-3 py-2 text-sm rounded-xl border border-[var(--color-slate-200)] bg-white focus:outline-none focus:border-[var(--color-blue-500)]" />
                     </div>
 
                     <button type="submit"
                         class="px-4 py-2 rounded-xl text-sm font-medium bg-[var(--color-blue-500)] text-white hover:bg-[var(--color-blue-600)] transition-colors">Terapkan</button>
-                    @if (request()->hasAny(['search', 'status_arsip', 'tanggal_dari', 'tanggal_sampai', 'jenis_log']))
+                    @if (request()->hasAny(['search', 'status_arsip', 'tanggal_dari', 'tanggal_sampai', 'jenis_log', 'keputusan_log']))
                         <a href="{{ route('arsip.index', ['tab' => $tab, 'jenis' => $jenis]) }}"
                             class="px-4 py-2 rounded-xl text-sm font-medium text-[var(--color-slate-400)] hover:text-[var(--color-slate-600)]">Reset</a>
                     @endif
@@ -320,22 +329,34 @@
             </div>
         @endif
 
-        {{-- tab riwayat pemusnahan --}}
+        {{-- tab riwayat keputusan (dimusnahkan + ditetapkan permanen) --}}
         @if ($tab === 'riwayat')
             <div class="overflow-x-auto">
                 <table class="w-full">
                     <thead>
                         <tr class="bg-[var(--color-slate-50)]/60 border-b border-[var(--color-slate-100)]">
+                            <th class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Keputusan</th>
                             <th class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Jenis</th>
                             <th class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Surat</th>
                             <th class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Klasifikasi</th>
-                            <th class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Dimusnahkan</th>
-                            <th class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Disetujui Oleh</th>
+                            <th class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Waktu Keputusan</th>
+                            <th class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Diputuskan Oleh</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-[var(--color-slate-100)]">
                         @forelse ($suratList as $l)
                             <tr class="even:bg-[var(--color-slate-50)]/40 align-top">
+                                <td class="px-5 py-3.5">
+                                    @if ($l->keputusan === 'permanen')
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-navy-700)]/10 text-[var(--color-navy-700)]">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-navy-700)]"></span>Permanen
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-danger)]/10 text-[var(--color-danger)]">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-danger)]"></span>Dimusnahkan
+                                        </span>
+                                    @endif
+                                </td>
                                 <td class="px-5 py-3.5">
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[var(--color-slate-100)] text-[var(--color-slate-500)]">{{ $l->jenis === 'keluar' ? 'Surat Keluar' : 'Surat Masuk' }}</span>
                                 </td>
@@ -347,12 +368,12 @@
                                     <p class="text-xs font-mono text-[var(--color-slate-500)]">{{ $l->kode_klasifikasi ?? '-' }}</p>
                                 </td>
                                 <td class="px-5 py-3.5">
-                                    <p class="text-xs text-[var(--color-danger)] font-medium">{{ $l->created_at->format('d M Y, H:i') }}</p>
+                                    <p class="text-xs text-[var(--color-slate-600)] font-medium">{{ $l->created_at->format('d M Y, H:i') }}</p>
                                 </td>
-                                <td class="px-5 py-3.5 text-sm text-[var(--color-slate-600)]">{{ $l->penyetuju->name ?? '—' }}</td>
+                                <td class="px-5 py-3.5 text-sm text-[var(--color-slate-600)]">{{ $l->pemutus->name ?? '—' }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="5" class="px-5 py-14 text-center text-sm text-[var(--color-slate-500)]">Belum ada arsip yang dimusnahkan.</td></tr>
+                            <tr><td colspan="6" class="px-5 py-14 text-center text-sm text-[var(--color-slate-500)]">Belum ada keputusan arsip yang tercatat.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

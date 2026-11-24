@@ -39,7 +39,6 @@
                     <option value="aktif" @selected(request('status_arsip') === 'aktif')>Aktif</option>
                     <option value="inaktif" @selected(request('status_arsip') === 'inaktif')>Inaktif</option>
                     <option value="permanen" @selected(request('status_arsip') === 'permanen')>Permanen</option>
-                    <option value="musnah" @selected(request('status_arsip') === 'musnah')>Musnah</option>
                 </select>
                 <button type="submit"
                     class="px-4 py-2 rounded-xl text-sm font-medium bg-white border border-[var(--color-slate-200)] text-[var(--color-slate-600)] hover:border-[var(--color-slate-300)] hover:text-[var(--color-navy-900)] transition-colors">Cari</button>
@@ -113,13 +112,6 @@
                                             class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-warning)]/10 text-[var(--color-warning)]">
                                             <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-warning)]"></span>Menunggu
                                             Persetujuan
-                                        </span>
-                                    @break
-
-                                    @case('musnah')
-                                        <span
-                                            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-danger)]/10 text-[var(--color-danger)]">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-danger)]"></span>Musnah
                                         </span>
                                     @break
 

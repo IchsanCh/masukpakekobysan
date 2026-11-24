@@ -100,7 +100,7 @@ class CekMasaRetensiArsip extends Command
      * PENTING: 'musnah' di sini CUMA nandain status jadi 'menunggu_musnah' —
      * gak langsung eksekusi hapus. Eksekusi beneran (file + DB + catat log)
      * cuma terjadi lewat approval manual agendaris di halaman Arsip
-     * (lihat ArsipPemusnahanService::musnahkan()).
+     * (lihat ArsipKeputusanService::musnahkan()).
      *
      * Mengembalikan nasib_akhir_default surat ini, dipakai untuk menentukan notif WA.
      */

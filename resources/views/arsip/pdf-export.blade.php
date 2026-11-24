@@ -16,7 +16,16 @@
 </head>
 <body>
     @if ($tab === 'riwayat')
-        <h1>Berita Acara Pemusnahan Arsip</h1>
+        {{-- Judul mengikuti isi: "Berita Acara Pemusnahan" hanya kalau isinya murni pemusnahan. --}}
+        <h1>
+            @if ($keputusan === 'musnah')
+                Berita Acara Pemusnahan Arsip
+            @elseif ($keputusan === 'permanen')
+                Daftar Penetapan Arsip Permanen
+            @else
+                Riwayat Keputusan Arsip
+            @endif
+        </h1>
         <p class="subtitle">DPMPTSP Kabupaten Pekalongan</p>
     @else
         <h1>Laporan Arsip</h1>
@@ -53,7 +62,13 @@
 
     @if ($tab === 'riwayat')
         <div class="footer">
-            Total {{ count($rows) }} arsip dimusnahkan pada periode ini.
+            @if ($keputusan === 'musnah')
+                Total {{ count($rows) }} arsip dimusnahkan pada periode ini.
+            @elseif ($keputusan === 'permanen')
+                Total {{ count($rows) }} arsip ditetapkan permanen pada periode ini.
+            @else
+                Total {{ count($rows) }} keputusan arsip pada periode ini.
+            @endif
         </div>
     @endif
 </body>

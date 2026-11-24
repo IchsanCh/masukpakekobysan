@@ -26,7 +26,7 @@ return new class () extends Migration {
                   ->constrained('referensi_retensis')
                   ->restrictOnDelete();
             $table->enum('status_disposisi', ['baru', 'diproses', 'selesai'])->default('baru');
-            $table->enum('status_arsip', ['aktif', 'inaktif', 'perlu_ditinjau', 'menunggu_musnah', 'musnah', 'permanen'])->default('aktif');
+            $table->enum('status_arsip', ['aktif', 'inaktif', 'perlu_ditinjau', 'menunggu_musnah', 'permanen'])->default('aktif');
 
             // Relasi ke user yang input
             $table->foreignId('dibuat_oleh')
