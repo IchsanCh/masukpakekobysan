@@ -28,6 +28,11 @@ return new class () extends Migration {
                   ->constrained('users')
                   ->cascadeOnDelete();
 
+            $table->foreignId('diinput_oleh_id')
+                  ->nullable()
+                  ->constrained('users')
+                  ->nullOnDelete();
+
             // Tujuan
             $table->enum('tipe_tujuan', ['unit', 'personal']);
             $table->foreignId('unit_id')

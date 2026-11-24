@@ -15,13 +15,10 @@ class ArsipPemusnahanLog extends Model
         'isi_ringkasan',
         'kode_klasifikasi',
         'disetujui_oleh',
-        'dimusnahkan_at',
-        'keterangan',
     ];
 
     protected $casts = [
         'tanggal_surat' => 'date',
-        'dimusnahkan_at' => 'datetime',
     ];
 
     public function penyetuju(): BelongsTo

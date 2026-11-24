@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
             'username' => 'admin',
             'email' => 'ichsanmuhammed01@gmail.com',
             'password' => Hash::make('password'),
-            'no_wa' => '08123456789',
+            'no_wa' => '0856',
             'unit_id' => $sekretariat?->id,
             'peran' => 'agendaris',
             'is_active' => true,
@@ -32,9 +32,42 @@ class UserSeeder extends Seeder
             'username' => 'pimpinan',
             'email' => 'pimpinan@example.com',
             'password' => Hash::make('password'),
-            'no_wa' => '08123456780',
+            'no_wa' => '0856',
             'unit_id' => $sekretariat?->id,
             'peran' => 'pimpinan',
+            'is_active' => true,
+        ]);
+
+         User::create([
+            'name' => 'Sekretariat',
+            'username' => 'sekretariat',
+            'email' => 'sekretariat@example.com',
+            'password' => Hash::make('password'),
+            'no_wa' => '0856',
+            'unit_id' => $sekretariat?->id,
+            'peran' => 'sekretariat',
+            'is_active' => true,
+        ]);
+
+         User::create([
+            'name' => 'Kabid',
+            'username' => 'kabid',
+            'email' => 'kabid@example.com',
+            'password' => Hash::make('password'),
+            'no_wa' => '0856',
+            'unit_id' => $sekretariat?->id,
+            'peran' => 'kabid',
+            'is_active' => true,
+        ]);
+
+         User::create([
+            'name' => 'Staf',
+            'username' => 'staf',
+            'email' => 'staf@example.com',
+            'password' => Hash::make('password'),
+            'no_wa' => '0856',
+            'unit_id' => $sekretariat?->id,
+            'peran' => 'staf',
             'is_active' => true,
         ]);
     }

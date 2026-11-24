@@ -82,14 +82,14 @@ class ArsipController extends Controller
         }
 
         if ($dari = $request->input('tanggal_dari')) {
-            $query->whereDate('dimusnahkan_at', '>=', $dari);
+            $query->whereDate('created_at', '>=', $dari);
         }
 
         if ($sampai = $request->input('tanggal_sampai')) {
-            $query->whereDate('dimusnahkan_at', '<=', $sampai);
+            $query->whereDate('created_at', '<=', $sampai);
         }
 
-        return $query->orderByDesc('dimusnahkan_at')->paginate(15)->withQueryString();
+        return $query->orderByDesc('created_at')->paginate(15)->withQueryString();
     }
 
     /**
@@ -134,7 +134,7 @@ class ArsipController extends Controller
 
         abort_unless($surat->status_arsip === 'menunggu_musnah', 422, 'Surat ini bukan status menunggu persetujuan.');
 
-        $service->musnahkan($surat, $jenis, $request->user()->id, $request->input('keterangan'));
+        $service->musnahkan($surat, $jenis, $request->user()->id);
 
         return redirect()->route('arsip.index', ['jenis' => $jenis, 'tab' => 'approval'])
             ->with('success', 'Arsip disetujui dan dimusnahkan.');
@@ -166,7 +166,7 @@ class ArsipController extends Controller
                 continue;
             }
 
-            $service->musnahkan($surat, $jenis, $request->user()->id, 'Disetujui secara bulk');
+            $service->musnahkan($surat, $jenis, $request->user()->id);
             $berhasil++;
         }
 
@@ -258,21 +258,20 @@ class ArsipController extends Controller
         }
 
         if ($dari = $request->input('tanggal_dari')) {
-            $query->whereDate('dimusnahkan_at', '>=', $dari);
+            $query->whereDate('created_at', '>=', $dari);
         }
 
         if ($sampai = $request->input('tanggal_sampai')) {
-            $query->whereDate('dimusnahkan_at', '<=', $sampai);
+            $query->whereDate('created_at', '<=', $sampai);
         }
 
-        return $query->orderByDesc('dimusnahkan_at')->get()->map(fn ($l) => [
+        return $query->orderByDesc('created_at')->get()->map(fn ($l) => [
             'Jenis' => $l->jenis,
             'Nomor Surat' => $l->nomor_surat,
             'Tanggal Surat' => $l->tanggal_surat->format('d-m-Y'),
             'Kode Klasifikasi' => $l->kode_klasifikasi ?? '-',
-            'Dimusnahkan' => $l->dimusnahkan_at->format('d-m-Y H:i'),
+            'Dimusnahkan' => $l->created_at->format('d-m-Y H:i'),
             'Disetujui Oleh' => $l->penyetuju->name ?? '-',
-            'Keterangan' => $l->keterangan ?? '-',
         ])->toArray();
     }
 

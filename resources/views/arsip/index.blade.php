@@ -347,10 +347,7 @@
                                     <p class="text-xs font-mono text-[var(--color-slate-500)]">{{ $l->kode_klasifikasi ?? '-' }}</p>
                                 </td>
                                 <td class="px-5 py-3.5">
-                                    <p class="text-xs text-[var(--color-danger)] font-medium">{{ $l->dimusnahkan_at->format('d M Y, H:i') }}</p>
-                                    @if ($l->keterangan)
-                                        <p class="text-[11px] text-[var(--color-slate-400)] mt-0.5">{{ $l->keterangan }}</p>
-                                    @endif
+                                    <p class="text-xs text-[var(--color-danger)] font-medium">{{ $l->created_at->format('d M Y, H:i') }}</p>
                                 </td>
                                 <td class="px-5 py-3.5 text-sm text-[var(--color-slate-600)]">{{ $l->penyetuju->name ?? '—' }}</td>
                             </tr>

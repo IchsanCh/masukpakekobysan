@@ -13,7 +13,7 @@ class ArsipPemusnahanService
      * karena baris surat aslinya bakal hilang), hapus file fisik, lalu hapus
      * record DB-nya permanen. Dipanggil dari approve tunggal maupun bulk.
      */
-    public function musnahkan(Model $surat, string $jenis, int $userId, ?string $keterangan = null): ArsipPemusnahanLog
+    public function musnahkan(Model $surat, string $jenis, int $userId): ArsipPemusnahanLog
     {
         $log = ArsipPemusnahanLog::create([
             'jenis' => $jenis,
@@ -23,8 +23,6 @@ class ArsipPemusnahanService
             'isi_ringkasan' => $surat->isi_ringkasan,
             'kode_klasifikasi' => $surat->referensiRetensi->kode_klasifikasi ?? null,
             'disetujui_oleh' => $userId,
-            'dimusnahkan_at' => now(),
-            'keterangan' => $keterangan,
         ]);
 
         if ($surat->file_surat) {

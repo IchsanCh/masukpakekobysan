@@ -18,8 +18,7 @@ return new class () extends Migration {
             $table->text('isi_ringkasan')->nullable();
             $table->string('kode_klasifikasi')->nullable();
             $table->foreignId('disetujui_oleh')->nullable()->constrained('users')->nullOnDelete();
-            $table->timestamp('dimusnahkan_at');
-            $table->text('keterangan')->nullable();
+            // created_at = waktu pemusnahan: baris log dibuat tepat saat surat dihapus permanen.
             $table->timestamps();
 
             $table->index(['jenis', 'surat_id']);
