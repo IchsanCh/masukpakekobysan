@@ -6,6 +6,7 @@ use App\Models\SuratKeluar;
 use App\Models\SuratMasuk;
 use App\Services\WhatsAppNotifier;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Throwable;
@@ -14,12 +15,29 @@ class CekMasaRetensiArsip extends Command
 {
     protected $signature = 'arsip:cek-retensi {--dry-run : Cuma tampilkan apa yang AKAN diproses, tanpa beneran eksekusi}';
 
-    protected $description = 'Cek surat masuk & keluar yang masa retensinya (masa_aktif + masa_inaktif) sudah habis, lalu tandai nasib akhirnya dan kabari agendaris via WhatsApp';
+    protected $description = 'Cek masa retensi surat masuk & keluar: pindahkan aktif -> inaktif saat masa_aktif habis, lalu tandai nasib akhir dan kabari agendaris via WhatsApp saat masa_aktif + masa_inaktif habis';
 
     public function handle(WhatsAppNotifier $notifier): int
     {
         $dryRun = $this->option('dry-run');
 
+        // Urutan hidup surat: aktif -> inaktif (masa_aktif habis) -> nasib akhir (masa_aktif + masa_inaktif habis).
+        $this->prosesRetensiHabis($notifier, $dryRun);
+        $this->tandaiInaktif($dryRun);
+
+        if ($dryRun) {
+            $this->line('Dry-run: status tidak diubah dan notifikasi WA tidak dikirim.');
+        }
+
+        return self::SUCCESS;
+    }
+
+    /**
+     * Total retensi (masa_aktif + masa_inaktif) sudah habis -> tandai nasib akhirnya
+     * (menunggu_musnah / permanen / perlu_ditinjau) dan kabari agendaris.
+     */
+    private function prosesRetensiHabis(WhatsAppNotifier $notifier, bool $dryRun): void
+    {
         $suratMasuk = $this->kandidatRetensiHabis(SuratMasuk::query());
         $suratKeluar = $this->kandidatRetensiHabis(SuratKeluar::query());
 
@@ -28,7 +46,7 @@ class CekMasaRetensiArsip extends Command
         if ($total === 0) {
             $this->info('Tidak ada surat yang masa retensinya habis saat ini.');
 
-            return self::SUCCESS;
+            return;
         }
 
         $this->info("Ditemukan {$total} surat yang masa retensinya sudah habis.");
@@ -62,14 +80,61 @@ class CekMasaRetensiArsip extends Command
         }
 
         if ($dryRun) {
-            $this->line('Dry-run: status tidak diubah dan notifikasi WA tidak dikirim.');
-
-            return self::SUCCESS;
+            return;
         }
 
         $this->kirimNotifikasi($notifier, $konfirmasiMusnah, $dinilaiKembali);
+    }
 
-        return self::SUCCESS;
+    /**
+     * aktif -> inaktif: masa_aktif sudah lewat, tapi total retensi belum habis.
+     * Surat yang total retensinya SUDAH habis sengaja tidak disentuh di sini —
+     * itu langsung ditangani prosesRetensiHabis() (misal data lama yang baru
+     * dimasukkan, atau masa_inaktif = 0 sehingga tidak ada fase inaktif).
+     */
+    private function tandaiInaktif(bool $dryRun): void
+    {
+        $jumlah = 0;
+
+        foreach ([['surat masuk', SuratMasuk::query()], ['surat keluar', SuratKeluar::query()]] as [$label, $query]) {
+            foreach ($this->kandidatInaktif($query) as $surat) {
+                $jumlah++;
+
+                $this->line("- [{$label}] {$surat->nomor_surat} -> aktif => inaktif");
+
+                if (! $dryRun) {
+                    $surat->update(['status_arsip' => 'inaktif']);
+                }
+            }
+        }
+
+        if ($jumlah === 0) {
+            $this->info('Tidak ada surat yang beralih ke inaktif.');
+
+            return;
+        }
+
+        $this->info($dryRun ? "{$jumlah} surat AKAN beralih ke inaktif." : "{$jumlah} surat beralih dari aktif ke inaktif.");
+    }
+
+    private function kandidatInaktif(Builder $query): Collection
+    {
+        return $query->with('referensiRetensi')
+            ->where('status_arsip', 'aktif')
+            ->whereNotNull('referensi_retensi_id')
+            ->get()
+            ->filter(function (Model $surat) {
+                $retensi = $surat->referensiRetensi;
+
+                if (! $retensi) {
+                    return false;
+                }
+
+                $masaAktifHabis = $surat->tanggal_surat->copy()->addYears($retensi->masa_aktif)->isPast();
+                $retensiHabis = $surat->tanggal_surat->copy()->addYears($retensi->masa_aktif + $retensi->masa_inaktif)->isPast();
+
+                return $masaAktifHabis && ! $retensiHabis;
+            });
     }
 
     /**
