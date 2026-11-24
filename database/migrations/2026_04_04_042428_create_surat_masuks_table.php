@@ -12,7 +12,6 @@ return new class () extends Migration {
     {
         Schema::create('surat_masuks', function (Blueprint $table) {
             $table->id();
-            $table->string('nomor_agenda', 50)->unique();
             $table->string('nomor_surat', 100);
             $table->date('tanggal_surat');
             $table->date('tanggal_diterima');

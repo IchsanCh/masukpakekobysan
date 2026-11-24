@@ -24,8 +24,7 @@ class SuratMasukController extends Controller
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
-                $q->where('nomor_agenda', 'like', "%{$search}%")
-                  ->orWhere('nomor_surat', 'like', "%{$search}%")
+                $q->where('nomor_surat', 'like', "%{$search}%")
                   ->orWhere('pengirim', 'like', "%{$search}%")
                   ->orWhere('isi_ringkasan', 'like', "%{$search}%");
             });
@@ -113,7 +112,6 @@ class SuratMasukController extends Controller
     private function validateRequest(Request $request, ?int $ignoreId = null): array
     {
         $validated = $request->validate([
-            'nomor_agenda' => 'required|string|max:50|unique:surat_masuks,nomor_agenda,' . $ignoreId,
             'nomor_surat' => 'required|string|max:100',
             'tanggal_surat' => 'required|date',
             'tanggal_diterima' => 'required|date',

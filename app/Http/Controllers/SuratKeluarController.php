@@ -49,22 +49,25 @@ class SuratKeluarController extends Controller
     }
 
     /**
-     * Endpoint kecil buat form create: kasih saran nomor surat terbaru
-     * begitu user ganti Tanggal Surat ke tahun lain.
+     * Endpoint kecil buat form create: kasih saran nomor surat (kode klasifikasi/tahun/no urut)
+     * begitu user ganti Tanggal Surat ke tahun lain atau memilih referensi retensi.
      */
     public function nextNomor(Request $request): \Illuminate\Http\JsonResponse
     {
         $tahun = (int) $request->query('tahun', now()->year);
+        $retensiId = $request->query('referensi_retensi_id');
 
         return response()->json([
-            'suggestion' => $this->buildSuggestedNomor($tahun),
+            'suggestion' => $this->buildSuggestedNomor($tahun, $retensiId ? (int) $retensiId : null),
         ]);
     }
 
     public function create(): View
     {
         $retensis = ReferensiRetensi::orderBy('kode_klasifikasi')->get();
-        $suggestedNomor = $this->buildSuggestedNomor(now()->year);
+        // Saran nomor baru bisa dibuat setelah referensi retensi dipilih (kode klasifikasinya
+        // jadi bagian nomor), jadi saat halaman pertama dibuka masih kosong.
+        $suggestedNomor = '';
 
         return view('surat-keluar.create', compact('retensis', 'suggestedNomor'));
     }
@@ -155,13 +158,25 @@ class SuratKeluarController extends Controller
     }
 
     /**
-     * Teks saran nomor surat (4 digit + tahun) yang di-pre-fill di form tambah.
+     * Teks saran nomor surat dengan format: kode_klasifikasi/tahun/no_urut (4 digit),
+     * contoh "000.1.1/2026/0001". No urut bersifat global per tahun (bukan per kode
+     * klasifikasi) dan reset ke 1 tiap ganti tahun. Kalau referensi retensi belum
+     * dipilih / tidak ditemukan, saran dikosongkan.
+     *
      * Ini cuma saran tampilan — nomor_urut yang beneran kesimpen dihitung ulang
      * saat submit (lihat store()), dan teks nomor_surat tetap bebas diedit user.
      */
-    private function buildSuggestedNomor(int $tahun): string
+    private function buildSuggestedNomor(int $tahun, ?int $retensiId): string
     {
-        return sprintf('%04d/%d', $this->nextNomorUrut($tahun), $tahun);
+        $kode = $retensiId
+            ? ReferensiRetensi::whereKey($retensiId)->value('kode_klasifikasi')
+            : null;
+
+        if (! $kode) {
+            return '';
+        }
+
+        return sprintf('%s/%d/%04d', $kode, $tahun, $this->nextNomorUrut($tahun));
     }
 
     private function validateRequest(Request $request, ?int $ignoreId = null): array

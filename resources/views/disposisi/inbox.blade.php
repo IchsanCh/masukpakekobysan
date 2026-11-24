@@ -100,9 +100,7 @@
                             class="even:bg-[var(--color-slate-50)]/40 hover:bg-[var(--color-blue-50)]/40 transition-colors">
                             <td class="px-5 py-3.5">
                                 <span
-                                    class="font-mono text-xs font-semibold text-[var(--color-blue-600)] bg-[var(--color-blue-50)] px-2 py-0.5 rounded-md">{{ $d->suratMasuk->nomor_agenda }}</span>
-                                <p class="text-xs text-[var(--color-slate-500)] mt-1 truncate max-w-[180px]">
-                                    {{ $d->suratMasuk->nomor_surat }}</p>
+                                    class="font-mono text-xs font-semibold text-[var(--color-blue-600)] bg-[var(--color-blue-50)] px-2 py-0.5 rounded-md">{{ $d->suratMasuk->nomor_surat }}</span>
                             </td>
                             <td class="px-5 py-3.5 text-sm text-[var(--color-navy-900)]">
                                 @if ($view === 'dikirim')

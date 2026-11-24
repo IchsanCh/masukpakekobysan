@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class SuratMasuk extends Model
 {
     protected $fillable = [
-        'nomor_agenda',
         'nomor_surat',
         'tanggal_surat',
         'tanggal_diterima',

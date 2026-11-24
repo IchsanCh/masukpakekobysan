@@ -28,7 +28,7 @@
                     <x-icon name="magnifying-glass"
                         class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-slate-400)]" />
                     <input type="text" name="search" value="{{ request('search') }}"
-                        placeholder="Cari no. agenda, no. surat, atau pengirim..."
+                        placeholder="Cari no. surat atau pengirim..."
                         class="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-[var(--color-slate-200)] bg-white
                                placeholder:text-[var(--color-slate-400)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all" />
                 </div>
@@ -56,9 +56,6 @@
                     <tr class="bg-[var(--color-slate-50)]/60 border-b border-[var(--color-slate-100)]">
                         <th
                             class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">
-                            Agenda</th>
-                        <th
-                            class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">
                             Surat</th>
                         <th
                             class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">
@@ -82,13 +79,9 @@
                         <tr
                             class="even:bg-[var(--color-slate-50)]/40 hover:bg-[var(--color-blue-50)]/40 transition-colors">
                             <td class="px-5 py-3.5">
-                                <span
-                                    class="font-mono text-xs font-semibold text-[var(--color-blue-600)] bg-[var(--color-blue-50)] px-2 py-0.5 rounded-md">{{ $s->nomor_agenda }}</span>
-                                <p class="text-[11px] text-[var(--color-slate-400)] mt-1">
-                                    {{ $s->tanggal_diterima->format('d M Y') }}</p>
-                            </td>
-                            <td class="px-5 py-3.5">
                                 <p class="text-sm font-semibold text-[var(--color-navy-900)]">{{ $s->nomor_surat }}</p>
+                                <p class="text-[11px] text-[var(--color-slate-400)] mt-0.5">
+                                    Diterima {{ $s->tanggal_diterima->format('d M Y') }}</p>
                                 <p class="text-xs text-[var(--color-slate-400)] truncate max-w-xs">
                                     {{ \Illuminate\Support\Str::limit($s->isi_ringkasan, 50) }}</p>
                             </td>
@@ -172,7 +165,7 @@
                                     <button
                                         @click="$dispatch('confirm-delete', {
                                         url: '{{ route('surat-masuk.destroy', $s) }}',
-                                        name: '{{ addslashes($s->nomor_agenda . ' - ' . $s->nomor_surat) }}'
+                                        name: '{{ addslashes($s->nomor_surat) }}'
                                     })"
                                         class="p-1.5 rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-danger)] hover:bg-red-50 transition-colors"
                                         title="Hapus">
@@ -183,7 +176,7 @@
                         </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-5 py-14 text-center">
+                                <td colspan="6" class="px-5 py-14 text-center">
                                     <div
                                         class="w-12 h-12 rounded-2xl bg-[var(--color-slate-100)] flex items-center justify-center mx-auto mb-3">
                                         <x-icon name="inbox" class="w-5 h-5 text-[var(--color-slate-400)]" />

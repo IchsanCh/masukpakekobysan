@@ -11,8 +11,7 @@
         <div>
             <h1 class="font-[var(--font-heading)] text-2xl font-bold text-[var(--color-navy-900)] tracking-tight">Edit
                 Surat Masuk</h1>
-            <p class="text-sm text-[var(--color-slate-500)] mt-0.5">{{ $suratMasuk->nomor_agenda }} —
-                {{ $suratMasuk->nomor_surat }}</p>
+            <p class="text-sm text-[var(--color-slate-500)] mt-0.5">{{ $suratMasuk->nomor_surat }}</p>
         </div>
     </div>
 

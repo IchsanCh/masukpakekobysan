@@ -57,26 +57,14 @@
                 class="font-[var(--font-heading)] text-sm font-bold text-[var(--color-navy-900)] uppercase tracking-wider">
                 Data Surat</h3>
 
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Nomor Agenda *</label>
-                    <input type="text" name="nomor_agenda"
-                        value="{{ old('nomor_agenda', $suratMasuk->nomor_agenda ?? '') }}" required
-                        class="w-full px-3.5 py-2.5 text-sm font-mono rounded-xl border border-[var(--color-slate-200)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all"
-                        placeholder="Contoh: 001/SM/2026" />
-                    @error('nomor_agenda')
-                        <p class="text-xs text-[var(--color-danger)] mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Nomor Surat *</label>
-                    <input type="text" name="nomor_surat"
-                        value="{{ old('nomor_surat', $suratMasuk->nomor_surat ?? '') }}" required
-                        class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[var(--color-slate-200)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all" />
-                    @error('nomor_surat')
-                        <p class="text-xs text-[var(--color-danger)] mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+            <div>
+                <label class="block text-sm font-medium text-[var(--color-navy-700)] mb-1.5">Nomor Surat *</label>
+                <input type="text" name="nomor_surat"
+                    value="{{ old('nomor_surat', $suratMasuk->nomor_surat ?? '') }}" required
+                    class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-[var(--color-slate-200)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all" />
+                @error('nomor_surat')
+                    <p class="text-xs text-[var(--color-danger)] mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="grid grid-cols-2 gap-4">
