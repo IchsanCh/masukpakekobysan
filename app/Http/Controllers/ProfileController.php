@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\PhoneOtp;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,18 +15,15 @@ use Illuminate\View\View;
  * Yang diubah selalu akun yang sedang login ($request->user()), tidak pernah
  * lewat id dari request, jadi tidak ada celah mengubah akun orang lain.
  *
- * Tiap form punya error bag sendiri (name/username/email/password/phone/otp)
+ * Tiap form punya error bag sendiri (name/username/email/password/phone)
  * supaya pesan error tidak muncul di form yang salah.
  */
 class ProfileController extends Controller
 {
-    public function show(PhoneOtp $otp): View
+    public function show(): View
     {
-        $user = auth()->user()->load('unit');
-
         return view('profile.index', [
-            'user' => $user,
-            'pendingPhone' => $otp->pending($user),
+            'user' => auth()->user()->load('unit'),
         ]);
     }
 
@@ -125,21 +121,22 @@ class ProfileController extends Controller
     }
 
     /**
-     * Langkah 1 ganti no. WhatsApp: kirim kode OTP ke NOMOR BARU. no_wa di akun
-     * belum berubah sampai kode diverifikasi. Endpoint ini juga dipakai tombol
-     * "Kirim ulang" (nomor yang sama dikirim lagi).
+     * Ganti no. WhatsApp. Pola sama dengan username & email: cukup konfirmasi
+     * password saat ini, tanpa OTP. Input dirapikan jadi format lokal 08xxxxxxxxxx.
      */
-    public function requestPhoneOtp(Request $request, PhoneOtp $otp): RedirectResponse
+    public function updatePhone(Request $request): RedirectResponse
     {
         $user = $request->user();
 
         $request->validateWithBag('phone', [
+            'current_password' => ['required', 'current_password'],
             'no_wa' => ['required', 'string', 'max:20'],
         ], [
+            'current_password.current_password' => 'Password saat ini salah.',
             'no_wa.required' => 'Nomor WhatsApp wajib diisi.',
         ]);
 
-        $phone = PhoneOtp::normalize($request->input('no_wa'));
+        $phone = self::normalizePhone($request->input('no_wa'));
 
         if ($phone === null) {
             return back()->withInput()->withErrors(
@@ -148,52 +145,31 @@ class ProfileController extends Controller
             );
         }
 
-        if ($user->no_wa && PhoneOtp::normalize($user->no_wa) === $phone) {
+        if ($user->no_wa && self::normalizePhone($user->no_wa) === $phone) {
             return back()->withInput()->withErrors(
                 ['no_wa' => 'Nomor ini sudah terpasang di akunmu.'],
                 'phone'
             );
         }
 
-        $result = $otp->send($user, $phone);
+        $user->update(['no_wa' => $phone]);
 
-        if (! $result['ok']) {
-            return back()->withInput()->withErrors(['no_wa' => $result['message']], 'phone');
-        }
-
-        return redirect()->route('profile.show')
-            ->with('success', 'Kode OTP dikirim ke WhatsApp ' . PhoneOtp::mask($phone) . '.');
+        return redirect()->route('profile.show')->with('success', 'Nomor WhatsApp berhasil diperbarui.');
     }
 
     /**
-     * Langkah 2: cocokkan kode. Hanya kalau benar, no_wa akun diganti ke nomor
-     * yang tadi dikirimi kode (diambil dari state server, bukan dari form).
+     * Rapikan input nomor jadi format lokal 08xxxxxxxxxx.
+     * Menerima 08..., 628..., atau +628... (spasi/strip diabaikan).
+     * Mengembalikan null kalau bukan nomor seluler Indonesia yang masuk akal.
      */
-    public function verifyPhoneOtp(Request $request, PhoneOtp $otp): RedirectResponse
+    private static function normalizePhone(string $raw): ?string
     {
-        $request->validateWithBag('otp', [
-            'kode' => ['required', 'digits:6'],
-        ], [
-            'kode.required' => 'Masukkan kode OTP.',
-            'kode.digits' => 'Kode OTP terdiri dari 6 angka.',
-        ]);
+        $digits = preg_replace('/\D/', '', $raw);
 
-        $user = $request->user();
-        $result = $otp->verify($user, $request->input('kode'));
-
-        if (! $result['ok']) {
-            return back()->withErrors(['kode' => $result['message']], 'otp');
+        if (str_starts_with($digits, '62')) {
+            $digits = '0' . substr($digits, 2);
         }
 
-        $user->update(['no_wa' => $result['phone']]);
-
-        return redirect()->route('profile.show')->with('success', 'Nomor WhatsApp berhasil diganti.');
-    }
-
-    public function cancelPhoneOtp(Request $request, PhoneOtp $otp): RedirectResponse
-    {
-        $otp->cancel($request->user());
-
-        return redirect()->route('profile.show');
+        return preg_match('/^08\d{7,12}$/', $digits) ? $digits : null;
     }
 }

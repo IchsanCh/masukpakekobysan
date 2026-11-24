@@ -7,17 +7,17 @@
             ->implode('') ?:
         'U';
 
-    // Baris yang langsung terbuka: yang barusan gagal divalidasi, atau OTP yang sedang berjalan.
-    $openOnLoad =
-        collect(['name', 'username', 'email', 'password'])->first(fn($bag) => $errors->hasBag($bag)) ??
-        ($pendingPhone || $errors->hasBag('phone') || $errors->hasBag('otp') ? 'phone' : null);
+    // Baris yang langsung terbuka: yang barusan gagal divalidasi.
+    $openOnLoad = collect(['name', 'username', 'email', 'phone', 'password'])->first(
+        fn($bag) => $errors->hasBag($bag),
+    );
 
     // Input pertama tiap baris, untuk fokus otomatis saat baris dibuka.
     $focusIds = [
         'name' => 'name',
         'username' => 'username',
         'email' => 'email',
-        'phone' => $pendingPhone ? 'kode' : 'no_wa',
+        'phone' => 'no_wa',
         'password' => 'current_password',
     ];
 
@@ -167,84 +167,34 @@
                             </form>
                         </x-profile.row>
 
-                        {{-- Nomor WhatsApp: nomor baru diverifikasi lewat OTP sebelum dipasang --}}
+                        {{-- Nomor WhatsApp --}}
                         <x-profile.row id="phone" label="Nomor WhatsApp">
                             <x-slot:value>
                                 @if ($user->no_wa)
-                                    <span class="block truncate">{{ $user->no_wa }}</span>
+                                    <span class="block truncate" title="{{ $user->no_wa }}">{{ $user->no_wa }}</span>
                                 @else
                                     <span class="block font-normal text-[var(--color-slate-500)]">Belum diisi</span>
                                 @endif
-                                @if ($pendingPhone)
-                                    <span
-                                        class="block text-xs font-normal text-[var(--color-warning)]">Menunggu kode OTP untuk nomor baru</span>
-                                @endif
                             </x-slot:value>
 
-                            <div class="max-w-md">
-                                @if ($pendingPhone)
-                                    {{-- Langkah 2: masukkan kode --}}
-                                    <p class="text-sm text-[var(--color-slate-700)] mb-4">
-                                        Kode OTP 6 angka dikirim ke WhatsApp <span
-                                            class="font-semibold">{{ $pendingPhone['masked'] }}</span>. Berlaku 5
-                                        menit. Nomor di akunmu baru berganti setelah kode benar.
-                                    </p>
-
-                                    <form method="POST" action="{{ route('profile.phone.verify') }}"
-                                        class="space-y-4" x-data="{ busy: false }" @submit="busy = true"
-                                        @pageshow.window="busy = false">
-                                        @csrf
-                                        <x-profile.field id="kode" name="kode" label="Kode OTP" bag="otp"
-                                            inputmode="numeric" pattern="[0-9]*" maxlength="6"
-                                            autocomplete="one-time-code" required placeholder="123456"
-                                            class="tracking-[0.3em] tabular-nums sm:max-w-[12rem]" />
-                                        <button type="submit" :disabled="busy"
-                                            class="{{ $primary }} w-full sm:w-auto"
-                                            x-text="busy ? 'Memeriksa...' : 'Verifikasi nomor'">Verifikasi nomor</button>
-                                    </form>
-
-                                    <div class="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-[color:var(--color-slate-200)]"
-                                        x-data="{
-                                            resend: {{ (int) ($pendingPhone['resend_in'] ?? 0) }},
-                                            init() { setInterval(() => { if (this.resend > 0) this.resend--; }, 1000); }
-                                        }">
-                                        <form method="POST" action="{{ route('profile.phone.otp') }}">
-                                            @csrf
-                                            <input type="hidden" name="no_wa" value="{{ $pendingPhone['phone'] }}" />
-                                            <button type="submit" :disabled="resend > 0" class="{{ $ghost }}"
-                                                x-text="resend > 0 ? 'Kirim ulang kode (' + resend + ' dtk)' : 'Kirim ulang kode'">Kirim
-                                                ulang kode</button>
-                                        </form>
-                                        <form method="POST" action="{{ route('profile.phone.cancel') }}">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="{{ $ghost }}">Pakai nomor
-                                                lain</button>
-                                        </form>
-                                    </div>
-                                    @error('no_wa', 'phone')
-                                        <p class="text-xs text-[var(--color-danger)] mt-2">{{ $message }}</p>
-                                    @enderror
-                                @else
-                                    {{-- Langkah 1: nomor baru --}}
-                                    <form method="POST" action="{{ route('profile.phone.otp') }}" class="space-y-4"
-                                        x-data="{ busy: false }" @submit="busy = true"
-                                        @pageshow.window="busy = false">
-                                        @csrf
-                                        <x-profile.field id="no_wa" name="no_wa" label="Nomor WhatsApp baru"
-                                            bag="phone" type="tel" :value="old('no_wa')" required maxlength="20"
-                                            inputmode="tel" autocomplete="tel" placeholder="08123456789"
-                                            hint="Notifikasi disposisi dan pengingat dikirim ke nomor ini. Kami kirim kode OTP lewat WhatsApp untuk memastikan nomornya milikmu." />
-                                        <div class="flex flex-wrap items-center gap-2">
-                                            <button type="submit" :disabled="busy" class="{{ $primary }}"
-                                                x-text="busy ? 'Mengirim...' : 'Kirim kode OTP'">Kirim kode
-                                                OTP</button>
-                                            <button type="button" @click="open = null"
-                                                class="{{ $ghost }}">Batal</button>
-                                        </div>
-                                    </form>
-                                @endif
-                            </div>
+                            <form method="POST" action="{{ route('profile.phone') }}" class="max-w-md space-y-4"
+                                x-data="{ busy: false }" @submit="busy = true" @pageshow.window="busy = false">
+                                @csrf
+                                @method('PUT')
+                                <x-profile.field id="no_wa" name="no_wa" label="Nomor WhatsApp baru" bag="phone"
+                                    type="tel" :value="old('no_wa', $user->no_wa)" required maxlength="20"
+                                    inputmode="tel" autocomplete="tel" placeholder="08123456789"
+                                    hint="Notifikasi disposisi dan pengingat dikirim ke nomor ini." />
+                                <x-profile.field id="phone_password" name="current_password"
+                                    label="Password saat ini" bag="phone" type="password" required
+                                    autocomplete="current-password" />
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <button type="submit" :disabled="busy" class="{{ $primary }}"
+                                        x-text="busy ? 'Menyimpan...' : 'Simpan nomor'">Simpan nomor</button>
+                                    <button type="button" @click="open = null"
+                                        class="{{ $ghost }}">Batal</button>
+                                </div>
+                            </form>
                         </x-profile.row>
                     </div>
                 </section>
