@@ -25,6 +25,15 @@ class SuratKeluar extends Model
         'tanggal_surat' => 'date',
     ];
 
+    /**
+     * Hanya agendaris yang boleh input/edit/hapus surat keluar.
+     * Pimpinan dan peran lain tidak (pimpinan hanya memantau).
+     */
+    public function canBeManagedBy(User $user): bool
+    {
+        return $user->hasRole('agendaris');
+    }
+
     public function referensiRetensi(): BelongsTo
     {
         return $this->belongsTo(ReferensiRetensi::class, 'referensi_retensi_id');

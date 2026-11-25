@@ -16,6 +16,23 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ArsipController extends Controller
 {
+    private const TABS = ['tinjau', 'approval', 'semua', 'riwayat'];
+
+    private const STATUS_LABEL = [
+        'aktif' => 'Aktif',
+        'inaktif' => 'Inaktif',
+        'perlu_ditinjau' => 'Perlu Ditinjau',
+        'menunggu_musnah' => 'Menunggu Persetujuan',
+        'permanen' => 'Permanen',
+    ];
+
+    private const TAB_LABEL = [
+        'tinjau' => 'Perlu Ditinjau',
+        'approval' => 'Menunggu Persetujuan',
+        'semua' => 'Semua Arsip',
+        'riwayat' => 'Riwayat Keputusan',
+    ];
+
     public function index(Request $request): View
     {
         $jenis = $request->input('jenis') === 'keluar' ? 'keluar' : 'masuk';
@@ -32,8 +49,16 @@ class ArsipController extends Controller
         $menungguMasuk = SuratMasuk::where('status_arsip', 'menunggu_musnah')->count();
         $menungguKeluar = SuratKeluar::where('status_arsip', 'menunggu_musnah')->count();
 
+        // Pimpinan hanya memantau; semua tombol aksi disembunyikan di view
+        // (dan route aksinya memang khusus agendaris).
+        $canManage = $request->user()->hasRole('agendaris');
+
+        // Query export selalu membawa tab & jenis yang sedang tampil, jadi isi CSV/PDF
+        // sama dengan layar (sebelumnya tab default tanpa query salah jatuh ke "riwayat").
+        $exportQuery = array_merge($request->query(), ['tab' => $tab, 'jenis' => $jenis]);
+
         return view('arsip.index', compact(
-            'suratList', 'jenis', 'tab',
+            'suratList', 'jenis', 'tab', 'canManage', 'exportQuery',
             'perluDitinjauMasuk', 'perluDitinjauKeluar',
             'menungguMasuk', 'menungguKeluar',
         ));
@@ -196,7 +221,7 @@ class ArsipController extends Controller
 
     public function exportCsv(Request $request): StreamedResponse
     {
-        $tab = $request->input('tab', 'riwayat');
+        $tab = $this->tabExport($request);
         $rows = $tab === 'riwayat'
             ? $this->rowsRiwayatUntukExport($request)
             : $this->rowsSuratUntukExport($request);
@@ -205,6 +230,8 @@ class ArsipController extends Controller
 
         $callback = function () use ($rows) {
             $handle = fopen('php://output', 'w');
+            // BOM UTF-8 supaya Excel membaca karakter dengan benar.
+            fwrite($handle, "\xEF\xBB\xBF");
             fputcsv($handle, array_keys($rows[0] ?? ['Kosong' => '']));
             foreach ($rows as $row) {
                 fputcsv($handle, $row);
@@ -219,14 +246,19 @@ class ArsipController extends Controller
 
     public function exportPdf(Request $request): \Illuminate\Http\Response
     {
-        $tab = $request->input('tab', 'riwayat');
+        $tab = $this->tabExport($request);
         $rows = $tab === 'riwayat'
             ? $this->rowsRiwayatUntukExport($request)
             : $this->rowsSuratUntukExport($request);
 
+        $subjudul = $tab === 'riwayat'
+            ? null
+            : (($request->input('jenis') === 'keluar' ? 'Surat Keluar' : 'Surat Masuk') . ' — ' . self::TAB_LABEL[$tab]);
+
         $pdf = Pdf::loadView('arsip.pdf-export', [
             'rows' => $rows,
             'tab' => $tab,
+            'subjudul' => $subjudul,
             'tanggalDari' => $request->input('tanggal_dari'),
             'tanggalSampai' => $request->input('tanggal_sampai'),
             'keputusan' => in_array($request->input('keputusan_log'), [ArsipKeputusanLog::MUSNAH, ArsipKeputusanLog::PERMANEN], true)
@@ -236,6 +268,14 @@ class ArsipController extends Controller
         ])->setPaper('a4', 'landscape');
 
         return $pdf->download('arsip-' . $tab . '-' . now()->format('Ymd_His') . '.pdf');
+    }
+
+    /** Tab export dibatasi ke tab yang valid; selain itu jatuh ke "riwayat" (perilaku lama). */
+    private function tabExport(Request $request): string
+    {
+        $tab = $request->input('tab');
+
+        return in_array($tab, self::TABS, true) ? $tab : 'riwayat';
     }
 
     private function rowsSuratUntukExport(Request $request): array
@@ -255,6 +295,13 @@ class ArsipController extends Controller
             $query->where('status_arsip', $status);
         }
 
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nomor_surat', 'like', "%{$search}%")
+                  ->orWhere('isi_ringkasan', 'like', "%{$search}%");
+            });
+        }
+
         if ($dari = $request->input('tanggal_dari')) {
             $query->whereDate('tanggal_surat', '>=', $dari);
         }
@@ -268,7 +315,7 @@ class ArsipController extends Controller
             'Tanggal' => $s->tanggal_surat->format('d-m-Y'),
             'Isi Ringkasan' => $s->isi_ringkasan,
             'Kode Klasifikasi' => $s->referensiRetensi->kode_klasifikasi ?? '-',
-            'Status Arsip' => $s->status_arsip,
+            'Status Arsip' => self::STATUS_LABEL[$s->status_arsip] ?? $s->status_arsip,
         ])->toArray();
     }
 
@@ -276,7 +323,7 @@ class ArsipController extends Controller
     {
         return $this->riwayatQuery($request)->get()->map(fn ($l) => [
             'Keputusan' => $l->keputusan === ArsipKeputusanLog::PERMANEN ? 'Ditetapkan Permanen' : 'Dimusnahkan',
-            'Jenis' => $l->jenis,
+            'Jenis' => $l->jenis === 'keluar' ? 'Surat Keluar' : 'Surat Masuk',
             'Nomor Surat' => $l->nomor_surat,
             'Tanggal Surat' => $l->tanggal_surat->format('d-m-Y'),
             'Kode Klasifikasi' => $l->kode_klasifikasi ?? '-',

@@ -4,8 +4,19 @@
         <div>
             <h1 class="font-[var(--font-heading)] text-2xl font-bold text-[var(--color-navy-900)] tracking-tight">Surat
                 Masuk</h1>
-            <p class="text-sm text-[var(--color-slate-500)] mt-0.5">Daftar surat masuk yang tercatat</p>
+            <p class="text-sm text-[var(--color-slate-500)] mt-0.5">
+                @if ($canManage)
+                    Daftar surat masuk yang tercatat
+                @elseif ($canViewAll)
+                    Semua surat masuk (hanya lihat)
+                @elseif ($user->hasRole('kabid'))
+                    Surat yang didisposisikan ke bidang Anda
+                @else
+                    Surat yang didisposisikan kepada Anda
+                @endif
+            </p>
         </div>
+        @if ($canManage)
         <a href="{{ route('surat-masuk.create') }}"
             class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-white
                   bg-gradient-to-br from-[var(--color-blue-500)] to-[var(--color-blue-600)]
@@ -15,6 +26,7 @@
             <x-icon name="plus" class="w-4 h-4" />
             Tambah Surat
         </a>
+        @endif
     </div>
 
     <div
@@ -66,6 +78,11 @@
                         <th
                             class="px-5 py-3 text-center text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">
                             Status</th>
+                        @unless ($canViewAll)
+                            <th
+                                class="px-5 py-3 text-center text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">
+                                Disposisi Saya</th>
+                        @endunless
                         <th
                             class="px-5 py-3 text-center text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">
                             File</th>
@@ -139,6 +156,31 @@
                                         </span>
                                 @endswitch
                             </td>
+                            @unless ($canViewAll)
+                                <td class="px-5 py-3.5 text-center">
+                                    @php
+                                        $mine = $s->disposisi->filter(fn ($d) => $d->canBeActedBy($user));
+                                        $pending = $mine->first(fn ($d) => ! $d->isTerminal());
+                                        $labelDisp = ['menunggu' => 'Menunggu', 'diterima' => 'Diterima', 'diproses' => 'Diproses'];
+                                    @endphp
+                                    @if ($pending)
+                                        <a href="{{ route('disposisi.show', $s) }}"
+                                            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-warning)]/10 text-[var(--color-warning)] hover:bg-[var(--color-warning)]/20 transition-colors"
+                                            title="Buka untuk menindaklanjuti">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-warning)]"></span>{{ $labelDisp[$pending->status] ?? $pending->status }}
+                                        </a>
+                                    @elseif ($mine->isNotEmpty())
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-success)]/10 text-[var(--color-success)]">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-success)]"></span>Selesai
+                                        </span>
+                                    @elseif ($user->hasRole('kabid'))
+                                        <span class="text-xs text-[var(--color-slate-400)]">Pantauan bidang</span>
+                                    @else
+                                        <span class="text-xs text-[var(--color-slate-300)]">-</span>
+                                    @endif
+                                </td>
+                            @endunless
                             <td class="px-5 py-3.5 text-center">
                                 @if ($s->file_surat)
                                     <a href="{{ asset('storage/' . $s->file_surat) }}" target="_blank"
@@ -154,9 +196,10 @@
                                 <div class="flex items-center justify-end gap-1">
                                     <a href="{{ route('disposisi.show', $s) }}"
                                         class="p-1.5 rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-blue-500)] hover:bg-[var(--color-blue-50)] transition-colors"
-                                        title="Disposisi">
+                                        title="{{ $canViewAll ? 'Disposisi' : 'Lihat rantai disposisi' }}">
                                         <x-icon name="arrow-right-circle" class="w-4 h-4" />
                                     </a>
+                                    @if ($canManage)
                                     <a href="{{ route('surat-masuk.edit', $s) }}"
                                         class="p-1.5 rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-blue-500)] hover:bg-[var(--color-blue-50)] transition-colors"
                                         title="Edit">
@@ -171,19 +214,27 @@
                                         title="Hapus">
                                         <x-icon name="trash" class="w-4 h-4" />
                                     </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-5 py-14 text-center">
+                                <td colspan="{{ $canViewAll ? 6 : 7 }}" class="px-5 py-14 text-center">
                                     <div
                                         class="w-12 h-12 rounded-2xl bg-[var(--color-slate-100)] flex items-center justify-center mx-auto mb-3">
                                         <x-icon name="inbox" class="w-5 h-5 text-[var(--color-slate-400)]" />
                                     </div>
-                                    <p class="text-sm font-medium text-[var(--color-slate-500)]">Belum ada surat masuk.</p>
-                                    <p class="text-xs text-[var(--color-slate-400)] mt-0.5">Klik "Tambah Surat" untuk
-                                        mencatat surat masuk pertama.</p>
+                                    <p class="text-sm font-medium text-[var(--color-slate-500)]">{{ $canManage || $canViewAll ? 'Belum ada surat masuk.' : 'Belum ada surat yang didisposisikan.' }}</p>
+                                    <p class="text-xs text-[var(--color-slate-400)] mt-0.5">
+                                        @if ($canManage)
+                                            Klik "Tambah Surat" untuk mencatat surat masuk pertama.
+                                        @elseif ($canViewAll)
+                                            Surat akan muncul setelah agendaris mencatatnya.
+                                        @else
+                                            Surat akan muncul di sini setelah didisposisikan kepada Anda.
+                                        @endif
+                                    </p>
                                 </td>
                             </tr>
                         @endforelse

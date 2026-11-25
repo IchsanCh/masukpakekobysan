@@ -28,7 +28,7 @@
         </h1>
         <p class="subtitle">DPMPTSP Kabupaten Pekalongan</p>
     @else
-        <h1>Laporan Arsip</h1>
+        <h1>Laporan Arsip{{ !empty($subjudul) ? ' — ' . $subjudul : '' }}</h1>
         <p class="subtitle">DPMPTSP Kabupaten Pekalongan</p>
     @endif
 

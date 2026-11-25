@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -28,6 +29,35 @@ class Disposisi extends Model
         'dibaca_at' => 'datetime',
         'diselesaikan_at' => 'datetime',
     ];
+
+    /**
+     * Disposisi yang "menyentuh" $user — dasar untuk menentukan surat masuk mana
+     * yang boleh dia lihat (selain agendaris & pimpinan yang melihat semua):
+     *  - dikirim oleh dia,
+     *  - ditujukan personal ke dia,
+     *  - ditujukan ke unit (bidang) tempat dia berada,
+     *  - khusus kabid: ditujukan personal ke siapa pun yang satu bidang dengannya.
+     */
+    public function scopeTerlihatOleh(Builder $query, User $user): Builder
+    {
+        return $query->where(function (Builder $w) use ($user) {
+            $w->where('dari_user_id', $user->id)
+              ->orWhere('kepada_user_id', $user->id);
+
+            if ($user->unit_id) {
+                $w->orWhere(function (Builder $x) use ($user) {
+                    $x->where('tipe_tujuan', 'unit')->where('unit_id', $user->unit_id);
+                });
+
+                if ($user->hasRole('kabid')) {
+                    $w->orWhere(function (Builder $x) use ($user) {
+                        $x->where('tipe_tujuan', 'personal')
+                          ->whereHas('kepadaUser', fn (Builder $u) => $u->where('unit_id', $user->unit_id));
+                    });
+                }
+            }
+        });
+    }
 
     public function suratMasuk(): BelongsTo
     {

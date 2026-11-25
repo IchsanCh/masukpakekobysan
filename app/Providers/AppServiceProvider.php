@@ -43,7 +43,7 @@ class AppServiceProvider extends ServiceProvider
                 ->count();
 
             $tinjau = $approval = 0;
-            if ($user->hasRole('agendaris')) {
+            if ($user->hasAnyRole(['agendaris', 'pimpinan'])) {
                 $tinjau   = SuratMasuk::where('status_arsip', 'perlu_ditinjau')->count()
                           + SuratKeluar::where('status_arsip', 'perlu_ditinjau')->count();
                 $approval = SuratMasuk::where('status_arsip', 'menunggu_musnah')->count()

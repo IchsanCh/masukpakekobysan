@@ -48,10 +48,7 @@ class DashboardController extends Controller
             $disposisiSelesai = Disposisi::where('status', 'selesai')->count();
         } else {
             // Bidang only sees disposisi assigned to them
-            $suratMasuk = SuratMasuk::whereHas('disposisi', function ($q) use ($user) {
-                $q->where('kepada_user_id', $user->id)
-                  ->orWhere('unit_id', $user->unit_id);
-            })->count();
+            $suratMasuk = SuratMasuk::visibleTo($user)->count();
 
             $suratKeluar = SuratKeluar::where('dibuat_oleh', $user->id)->count();
 
@@ -142,10 +139,7 @@ class DashboardController extends Controller
             fn ($w) => $w->where('kepada_user_id', $user->id)->orWhere('unit_id', $user->unit_id)
         ));
 
-        $masuk = SuratMasuk::query()
-            ->when(! $semua, fn ($q) => $q->whereHas('disposisi', function ($w) use ($user) {
-                $w->where('kepada_user_id', $user->id)->orWhere('unit_id', $user->unit_id);
-            }))
+        $masuk = SuratMasuk::visibleTo($user)
             ->whereBetween('tanggal_diterima', [$awal->toDateString(), $hariIni->toDateString()])
             ->pluck('tanggal_diterima');
 

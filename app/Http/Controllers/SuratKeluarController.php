@@ -22,8 +22,8 @@ class SuratKeluarController extends Controller
         $user = $request->user();
         $query = SuratKeluar::with(['referensiRetensi', 'pembuat']);
 
-        // Agendaris & pimpinan lihat semua surat keluar; selain itu cuma lihat punya sendiri
-        // (tiap unit/orang bisa nyatet surat keluarnya masing-masing).
+        // Agendaris & pimpinan lihat semua surat keluar (pimpinan read-only); selain itu
+        // cuma lihat punya sendiri — aturan visibilitas peran lain masih sementara, menunggu instansi.
         if (! $user->canViewAllSurat()) {
             $query->where('dibuat_oleh', $user->id);
         }
@@ -45,7 +45,10 @@ class SuratKeluarController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('surat-keluar.index', compact('suratKeluars'));
+        // Input/edit/hapus khusus agendaris; peran lain hanya melihat.
+        $canCreate = $user->hasRole('agendaris');
+
+        return view('surat-keluar.index', compact('suratKeluars', 'canCreate', 'user'));
     }
 
     /**
@@ -141,11 +144,11 @@ class SuratKeluarController extends Controller
     }
 
     /**
-     * Agendaris/pimpinan boleh kelola semua surat keluar; selain itu cuma yang dia buat sendiri.
+     * Pengaman lapis kedua (route sudah dibatasi role:agendaris): hanya agendaris yang boleh kelola.
      */
     private function authorizeAccess(User $user, SuratKeluar $suratKeluar): void
     {
-        abort_unless($user->canViewAllSurat() || $suratKeluar->dibuat_oleh === $user->id, 403);
+        abort_unless($suratKeluar->canBeManagedBy($user), 403);
     }
 
     /**

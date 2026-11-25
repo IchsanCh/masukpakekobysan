@@ -4,15 +4,15 @@
         <div>
             <h1 class="font-[var(--font-heading)] text-2xl font-bold text-[var(--color-navy-900)] tracking-tight">Nasib
                 Akhir Arsip</h1>
-            <p class="text-sm text-[var(--color-slate-500)] mt-0.5">Peninjauan, persetujuan pemusnahan, dan riwayat
-                arsip</p>
+            <p class="text-sm text-[var(--color-slate-500)] mt-0.5">
+                {{ $canManage ? 'Peninjauan, persetujuan pemusnahan, dan riwayat arsip' : 'Pantauan peninjauan, persetujuan pemusnahan, dan riwayat arsip (hanya lihat)' }}</p>
         </div>
         <div class="flex items-center gap-2">
-            <a href="{{ route('arsip.export-csv', request()->query()) }}"
+            <a href="{{ route('arsip.export-csv', $exportQuery) }}"
                 class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium bg-white border border-[var(--color-slate-200)] text-[var(--color-slate-600)] hover:border-[var(--color-slate-300)] transition-colors">
                 <x-icon name="arrow-down-tray" class="w-4 h-4" /> CSV
             </a>
-            <a href="{{ route('arsip.export-pdf', request()->query()) }}"
+            <a href="{{ route('arsip.export-pdf', $exportQuery) }}"
                 class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium bg-white border border-[var(--color-slate-200)] text-[var(--color-slate-600)] hover:border-[var(--color-slate-300)] transition-colors">
                 <x-icon name="arrow-down-tray" class="w-4 h-4" /> PDF
             </a>
@@ -180,7 +180,9 @@
                         <tr class="bg-[var(--color-slate-50)]/60 border-b border-[var(--color-slate-100)]">
                             <th class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Surat</th>
                             <th class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Klasifikasi Retensi</th>
-                            <th class="px-5 py-3 text-right text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Aksi</th>
+                            @if ($canManage)
+                                <th class="px-5 py-3 text-right text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Aksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-[var(--color-slate-100)]">
@@ -198,6 +200,7 @@
                                         @endif
                                     @endif
                                 </td>
+                                @if ($canManage)
                                 <td class="px-5 py-3.5 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
                                         <form method="POST" action="{{ route('arsip.permanen', ['jenis' => $jenis, 'id' => $s->id]) }}">
@@ -210,9 +213,10 @@
                                         </form>
                                     </div>
                                 </td>
+                                @endif
                             </tr>
                         @empty
-                            <tr><td colspan="3" class="px-5 py-14 text-center text-sm text-[var(--color-slate-500)]">Gak ada surat yang perlu ditinjau.</td></tr>
+                            <tr><td colspan="{{ $canManage ? 3 : 2 }}" class="px-5 py-14 text-center text-sm text-[var(--color-slate-500)]">Gak ada surat yang perlu ditinjau.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -221,9 +225,12 @@
 
 {{-- tab approval --}}
         @if ($tab === 'approval')
-            <form method="POST" action="{{ route('arsip.bulk-approve') }}" x-data="{ selected: [] }"
-                onsubmit="return confirm('Setujui & musnahkan semua arsip terpilih? File dan data akan DIHAPUS PERMANEN dan tidak bisa dikembalikan.')">
-                @csrf @method('DELETE')
+            <form method="POST" action="{{ $canManage ? route('arsip.bulk-approve') : '#' }}" x-data="{ selected: [] }"
+                @if ($canManage) onsubmit="return confirm('Setujui & musnahkan semua arsip terpilih? File dan data akan DIHAPUS PERMANEN dan tidak bisa dikembalikan.')" @endif>
+                @if ($canManage)
+                    @csrf @method('DELETE')
+                @endif
+                @if ($canManage)
                 <div class="px-5 py-3 border-b border-[var(--color-slate-100)] flex items-center justify-between bg-[var(--color-slate-50)]/40">
                     <label class="inline-flex items-center gap-2 text-xs text-[var(--color-slate-500)]">
                         <input type="checkbox" @click="selected = $event.target.checked ? Array.from(document.querySelectorAll('.approval-checkbox')).map(el => el.value) : []"
@@ -235,23 +242,34 @@
                         Setujui &amp; Musnahkan Terpilih (<span x-text="selected.length"></span>)
                     </button>
                 </div>
+                @else
+                <div class="px-5 py-3 border-b border-[var(--color-slate-100)] bg-[var(--color-slate-50)]/40 text-xs text-[var(--color-slate-500)]">
+                    Daftar arsip yang menunggu persetujuan pemusnahan oleh agendaris (hanya lihat).
+                </div>
+                @endif
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead>
                             <tr class="bg-[var(--color-slate-50)]/60 border-b border-[var(--color-slate-100)]">
-                                <th class="px-5 py-3 w-10"></th>
+                                @if ($canManage)
+                                    <th class="px-5 py-3 w-10"></th>
+                                @endif
                                 <th class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Surat</th>
                                 <th class="px-5 py-3 text-left text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Klasifikasi</th>
-                                <th class="px-5 py-3 text-right text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Aksi</th>
+                                @if ($canManage)
+                                    <th class="px-5 py-3 text-right text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">Aksi</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-[var(--color-slate-100)]">
                             @forelse ($suratList as $s)
                                 <tr class="even:bg-[var(--color-slate-50)]/40 align-top">
+                                    @if ($canManage)
                                     <td class="px-5 py-3.5">
                                         <input type="checkbox" name="items[]" value="{{ $jenis }}:{{ $s->id }}" x-model="selected"
                                             class="approval-checkbox w-4 h-4 rounded border-[var(--color-slate-300)]" />
                                     </td>
+                                    @endif
                                     <td class="px-5 py-3.5">
                                         <p class="text-sm font-semibold text-[var(--color-navy-900)]">{{ $s->nomor_surat }}</p>
                                         <p class="text-[11px] text-[var(--color-slate-400)] mt-0.5">{{ $s->tanggal_surat->format('d M Y') }}</p>
@@ -259,6 +277,7 @@
                                     <td class="px-5 py-3.5">
                                         <p class="text-xs font-mono text-[var(--color-slate-500)]">{{ $s->referensiRetensi->kode_klasifikasi ?? '-' }}</p>
                                     </td>
+                                    @if ($canManage)
                                     <td class="px-5 py-3.5 text-right">
                                         <button type="button"
                                             @click="if (confirm('Setujui & musnahkan surat ini sekarang? Tidak bisa dikembalikan.')) { document.getElementById('approve-{{ $jenis }}-{{ $s->id }}').submit() }"
@@ -266,20 +285,23 @@
                                             Setujui &amp; Musnahkan
                                         </button>
                                     </td>
+                                    @endif
                                 </tr>
                             @empty
-                                <tr><td colspan="4" class="px-5 py-14 text-center text-sm text-[var(--color-slate-500)]">Gak ada arsip yang menunggu persetujuan.</td></tr>
+                                <tr><td colspan="{{ $canManage ? 4 : 2 }}" class="px-5 py-14 text-center text-sm text-[var(--color-slate-500)]">Gak ada arsip yang menunggu persetujuan.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
             </form>
             {{-- Form approve tunggal, terpisah dari form bulk di atas (biar gak nested form) --}}
+            @if ($canManage)
             @foreach ($suratList as $s)
                 <form id="approve-{{ $jenis }}-{{ $s->id }}" method="POST" action="{{ route('arsip.approve', ['jenis' => $jenis, 'id' => $s->id]) }}" class="hidden">
                     @csrf @method('DELETE')
                 </form>
             @endforeach
+            @endif
         @endif
 
 {{-- tab semua arsip --}}
@@ -318,7 +340,14 @@
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $badgeColor }}">{{ $badge[1] }}</span>
                                 </td>
                                 <td class="px-5 py-3.5 text-right">
-                                    <a href="{{ $jenis === 'keluar' ? route('surat-keluar.edit', $s) : route('surat-masuk.edit', $s) }}" class="text-xs font-medium text-[var(--color-blue-600)] hover:underline">Lihat/Edit</a>
+                                    @if ($canManage)
+                                        <a href="{{ $jenis === 'keluar' ? route('surat-keluar.edit', $s) : route('surat-masuk.edit', $s) }}" class="text-xs font-medium text-[var(--color-blue-600)] hover:underline">Lihat/Edit</a>
+                                    @elseif ($jenis === 'masuk')
+                                        {{-- Pimpinan: halaman detail/rantai disposisi (read-only), bukan form edit --}}
+                                        <a href="{{ route('disposisi.show', $s) }}" class="text-xs font-medium text-[var(--color-blue-600)] hover:underline">Lihat</a>
+                                    @else
+                                        <span class="text-xs text-[var(--color-slate-300)]">-</span>
+                                    @endif
                                 </td>
                             </tr>
                         @empty

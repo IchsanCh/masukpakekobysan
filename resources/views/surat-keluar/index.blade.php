@@ -4,8 +4,9 @@
         <div>
             <h1 class="font-[var(--font-heading)] text-2xl font-bold text-[var(--color-navy-900)] tracking-tight">Surat
                 Keluar</h1>
-            <p class="text-sm text-[var(--color-slate-500)] mt-0.5">Daftar surat keluar yang tercatat</p>
+            <p class="text-sm text-[var(--color-slate-500)] mt-0.5">{{ $canCreate ? 'Daftar surat keluar yang tercatat' : 'Surat keluar (hanya lihat)' }}</p>
         </div>
+        @if ($canCreate)
         <a href="{{ route('surat-keluar.create') }}"
             class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold text-white
                   bg-gradient-to-br from-[var(--color-blue-500)] to-[var(--color-blue-600)]
@@ -15,6 +16,7 @@
             <x-icon name="plus" class="w-4 h-4" />
             Tambah Surat
         </a>
+        @endif
     </div>
 
     <div
@@ -142,6 +144,7 @@
                             </td>
                             <td class="px-5 py-3.5 text-right">
                                 <div class="flex items-center justify-end gap-1">
+                                    @if ($s->canBeManagedBy($user))
                                     <a href="{{ route('surat-keluar.edit', $s) }}"
                                         class="p-1.5 rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-blue-500)] hover:bg-[var(--color-blue-50)] transition-colors"
                                         title="Edit">
@@ -156,6 +159,9 @@
                                         title="Hapus">
                                         <x-icon name="trash" class="w-4 h-4" />
                                     </button>
+                                    @else
+                                        <span class="text-xs text-[var(--color-slate-300)]">-</span>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -168,8 +174,7 @@
                                     </div>
                                     <p class="text-sm font-medium text-[var(--color-slate-500)]">Belum ada surat keluar.
                                     </p>
-                                    <p class="text-xs text-[var(--color-slate-400)] mt-0.5">Klik "Tambah Surat" untuk
-                                        mencatat surat keluar pertama.</p>
+                                    <p class="text-xs text-[var(--color-slate-400)] mt-0.5">{{ $canCreate ? 'Klik "Tambah Surat" untuk mencatat surat keluar pertama.' : 'Belum ada surat keluar yang dicatat.' }}</p>
                                 </td>
                             </tr>
                         @endforelse

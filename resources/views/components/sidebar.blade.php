@@ -76,6 +76,21 @@
                 Tindak Lanjut
             </a>
 
+            @if (auth()->user()->hasRole('pimpinan'))
+                {{-- Pimpinan: pengawasan arsip (read-only) --}}
+                @php $active = request()->routeIs('arsip.*'); @endphp
+                <a href="{{ route('arsip.index') }}"
+                    @if ($active) aria-current="page" @endif
+                    class="flex items-center gap-3 px-3 py-3 lg:py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                          {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
+                    <x-icon name="archive-box" :solid="$active" class="w-[18px] h-[18px]" />
+                    Nasib Akhir Arsip
+                    <x-nav-badge :count="$badgeArsipTinjau + $badgeArsipApproval"
+                        label="arsip perlu ditinjau atau menunggu persetujuan musnah"
+                        title="{{ $badgeArsipTinjau }} perlu ditinjau, {{ $badgeArsipApproval }} menunggu persetujuan musnah" />
+                </a>
+            @endif
+
             @if (auth()->user()->hasRole('agendaris'))
                 <p
                     class="px-3 pt-5 pb-1.5 text-[11px] font-semibold text-[var(--color-slate-500)] uppercase tracking-wider">

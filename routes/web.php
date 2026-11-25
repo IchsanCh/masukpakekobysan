@@ -64,19 +64,25 @@ Route::middleware('auth')->group(function () {
         Route::get('notifikasi', [WaNotificationController::class, 'index'])->name('notifikasi.index');
 
         // Arsip — nasib akhir (peninjauan retensi) & pemusnahan (approval-based)
-        Route::get('arsip/nasib-akhir', [ArsipController::class, 'index'])->name('arsip.index');
         Route::patch('arsip/nasib-akhir/{jenis}/{id}/musnah', [ArsipController::class, 'tetapkanMusnah'])->name('arsip.musnah');
         Route::post('arsip/nasib-akhir/{jenis}/{id}/permanen', [ArsipController::class, 'tetapkanPermanen'])->name('arsip.permanen');
         Route::delete('arsip/nasib-akhir/{jenis}/{id}/approve', [ArsipController::class, 'approveMusnah'])->name('arsip.approve');
         Route::delete('arsip/nasib-akhir/bulk-approve', [ArsipController::class, 'bulkApprove'])->name('arsip.bulk-approve');
+    });
+
+    // Nasib Akhir Arsip — agendaris (kelola) & pimpinan (pengawasan, read-only).
+    // Semua aksi yang mengubah data (tetapkan permanen/musnah, approve) tetap khusus agendaris
+    // di grup role:agendaris di atas. Export CSV/PDF hanya baca, jadi boleh untuk keduanya.
+    Route::middleware('role:agendaris,pimpinan')->group(function () {
+        Route::get('arsip/nasib-akhir', [ArsipController::class, 'index'])->name('arsip.index');
         Route::get('arsip/export/csv', [ArsipController::class, 'exportCsv'])->name('arsip.export-csv');
         Route::get('arsip/export/pdf', [ArsipController::class, 'exportPdf'])->name('arsip.export-pdf');
     });
 
-    // Lihat daftar surat masuk — agendaris (input) & pimpinan (pengawasan), dipakai buat mulai disposisi
-    Route::middleware('role:agendaris,pimpinan')->group(function () {
-        Route::get('surat-masuk', [SuratMasukController::class, 'index'])->name('surat-masuk.index');
-    });
+    // Daftar surat masuk — semua peran boleh buka, isinya difilter per peran di controller
+    // (SuratMasuk::visibleTo): agendaris & pimpinan semua; kabid/sekretariat/staf hanya
+    // surat yang didisposisikan kepadanya/bidangnya. CRUD tetap khusus agendaris (grup di atas).
+    Route::get('surat-masuk', [SuratMasukController::class, 'index'])->name('surat-masuk.index');
 
     // Disposisi — akses per-role dicek di controller (unit tujuan bisa siapapun: kabid/sekretariat/staf)
     Route::get('disposisi', [DisposisiController::class, 'inbox'])->name('disposisi.inbox');
@@ -87,10 +93,16 @@ Route::middleware('auth')->group(function () {
     Route::get('tindak-lanjut', [TindakLanjutController::class, 'index'])->name('tindak-lanjut.index');
     Route::post('disposisi/{disposisi}/tindak-lanjut', [TindakLanjutController::class, 'store'])->name('tindak-lanjut.store');
 
-    // Surat Keluar — semua role bisa kelola punya sendiri; agendaris/pimpinan lihat & kelola semua
-    // (dicek di SuratKeluarController@authorizeAccess, bukan lewat middleware role).
-    Route::get('surat-keluar/next-nomor', [SuratKeluarController::class, 'nextNomor'])->name('surat-keluar.next-nomor');
-    Route::resource('surat-keluar', SuratKeluarController::class)->only([
-        'index', 'create', 'store', 'edit', 'update', 'destroy',
-    ]);
+    // Surat Keluar — input/edit/hapus khusus agendaris (middleware role, sama seperti surat masuk).
+    // Daftar boleh dibuka semua peran, isinya difilter di SuratKeluarController@index:
+    // agendaris & pimpinan melihat semua (pimpinan read-only); peran lain sementara hanya
+    // surat buatannya sendiri (menunggu keputusan instansi soal visibilitas).
+    Route::get('surat-keluar', [SuratKeluarController::class, 'index'])->name('surat-keluar.index');
+
+    Route::middleware('role:agendaris')->group(function () {
+        Route::get('surat-keluar/next-nomor', [SuratKeluarController::class, 'nextNomor'])->name('surat-keluar.next-nomor');
+        Route::resource('surat-keluar', SuratKeluarController::class)->only([
+            'create', 'store', 'edit', 'update', 'destroy',
+        ]);
+    });
 });

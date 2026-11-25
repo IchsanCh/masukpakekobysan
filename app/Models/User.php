@@ -77,7 +77,19 @@ class User extends Authenticatable
     }
 
     /**
+     * Hanya agendaris yang boleh input/edit/hapus surat masuk.
+     * Pimpinan hanya memantau (read-only); peran lain hanya melihat surat yang
+     * didisposisikan kepadanya / ke bidangnya.
+     */
+    public function canManageSuratMasuk(): bool
+    {
+        return $this->hasRole('agendaris');
+    }
+
+    /**
      * Check if user can create disposisi.
+     * Staf sengaja tidak ada di sini: staf posisi paling bawah, hanya bisa
+     * menerima, memproses, dan menindaklanjuti (tidak bisa meneruskan).
      */
     public function canDisposisi(): bool
     {

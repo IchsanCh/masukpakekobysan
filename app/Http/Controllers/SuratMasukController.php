@@ -20,7 +20,11 @@ class SuratMasukController extends Controller
 
     public function index(Request $request): View
     {
-        $query = SuratMasuk::with('referensiRetensi');
+        $user = $request->user();
+
+        // Agendaris & pimpinan: semua surat. Kabid/sekretariat/staf: hanya surat yang
+        // didisposisikan kepadanya (atau ke bidangnya) — lihat SuratMasuk::scopeVisibleTo.
+        $query = SuratMasuk::visibleTo($user)->with(['referensiRetensi', 'disposisi']);
 
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
@@ -39,7 +43,10 @@ class SuratMasukController extends Controller
             ->paginate(15)
             ->withQueryString();
 
-        return view('surat-masuk.index', compact('suratMasuks'));
+        $canManage = $user->canManageSuratMasuk();
+        $canViewAll = $user->canViewAllSurat();
+
+        return view('surat-masuk.index', compact('suratMasuks', 'canManage', 'canViewAll', 'user'));
     }
 
     public function create(): View

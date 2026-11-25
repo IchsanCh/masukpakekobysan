@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -26,6 +27,26 @@ class SuratMasuk extends Model
         'tanggal_surat' => 'date',
         'tanggal_diterima' => 'date',
     ];
+
+    /**
+     * Batasi surat masuk sesuai hak lihat $user:
+     * agendaris & pimpinan melihat semua; peran lain hanya surat yang punya
+     * disposisi yang menyentuh dirinya (lihat Disposisi::scopeTerlihatOleh).
+     * Rantai disposisi dari surat yang terlihat ditampilkan utuh (transparan).
+     */
+    public function scopeVisibleTo(Builder $query, User $user): Builder
+    {
+        if ($user->canViewAllSurat()) {
+            return $query;
+        }
+
+        return $query->whereHas('disposisi', fn (Builder $d) => $d->terlihatOleh($user));
+    }
+
+    public function isVisibleTo(User $user): bool
+    {
+        return static::query()->whereKey($this->getKey())->visibleTo($user)->exists();
+    }
 
     public function referensiRetensi(): BelongsTo
     {

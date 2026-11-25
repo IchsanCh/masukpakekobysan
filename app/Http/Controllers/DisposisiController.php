@@ -95,6 +95,7 @@ class DisposisiController extends Controller
         $user = $request->user();
 
         abort_unless($user->canDisposisi(), 403, 'Hanya pimpinan, kabid, sekretariat, atau agendaris (atas nama pimpinan) yang bisa membuat disposisi.');
+        abort_unless($this->canViewSurat($suratMasuk, $user), 403);
 
         $validated = $this->validateDisposisi($request);
         [$dariUserId, $diinputOlehId] = $this->resolveActor($request, $user);
@@ -241,22 +242,13 @@ class DisposisiController extends Controller
     }
 
     /**
-     * Boleh lihat halaman rantai disposisi surat ini kalau: bisa lihat semua surat (agendaris/pimpinan),
-     * atau dia bagian dari rantai disposisi surat ini (pengirim/penerima/anggota unit tujuan).
+     * Boleh lihat surat (dan rantai disposisinya) kalau: agendaris/pimpinan (semua surat),
+     * atau ada disposisi pada surat ini yang menyentuh dirinya — dikirim olehnya,
+     * ditujukan personal kepadanya, ditujukan ke bidangnya, atau (khusus kabid)
+     * ditujukan personal ke anggota bidangnya. Aturan yang sama dipakai daftar Surat Masuk.
      */
     private function canViewSurat(SuratMasuk $suratMasuk, User $user): bool
     {
-        if ($user->canViewAllSurat()) {
-            return true;
-        }
-
-        return Disposisi::where('surat_masuk_id', $suratMasuk->id)
-            ->where(function ($q) use ($user) {
-                $q->where('dari_user_id', $user->id)
-                  ->orWhere('kepada_user_id', $user->id)
-                  ->orWhere(function ($q2) use ($user) {
-                      $q2->where('tipe_tujuan', 'unit')->where('unit_id', $user->unit_id);
-                  });
-            })->exists();
+        return $suratMasuk->isVisibleTo($user);
     }
 }
