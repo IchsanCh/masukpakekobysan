@@ -1,3 +1,5 @@
+@props(['badgeDisposisi' => 0, 'badgeArsipTinjau' => 0, 'badgeArsipApproval' => 0])
+
 <div class="drawer-side z-40">
     <label for="sidebar-toggle" aria-label="close sidebar" class="drawer-overlay"></label>
 
@@ -61,6 +63,8 @@
                       {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                 <x-icon name="arrow-right-circle" :solid="$active" class="w-[18px] h-[18px]" />
                 Disposisi
+                <x-nav-badge :count="$badgeDisposisi" label="disposisi menunggu tindak lanjut"
+                    title="{{ $badgeDisposisi }} disposisi menunggu tindak lanjut" />
             </a>
 
             @php $active = request()->routeIs('tindak-lanjut.*'); @endphp
@@ -133,6 +137,9 @@
                           {{ $active ? 'bg-[var(--color-blue-50)] text-[var(--color-blue-600)]' : 'text-[var(--color-slate-500)] hover:bg-[var(--color-slate-100)] hover:text-[var(--color-slate-700)]' }}">
                     <x-icon name="eye" :solid="$active" class="w-[18px] h-[18px]" />
                     Nasib Akhir Arsip
+                    <x-nav-badge :count="$badgeArsipTinjau + $badgeArsipApproval"
+                        label="arsip perlu ditangani (ditinjau atau disetujui musnah)"
+                        title="{{ $badgeArsipTinjau }} perlu ditinjau, {{ $badgeArsipApproval }} menunggu persetujuan musnah" />
                 </a>
             @endif
         </nav>

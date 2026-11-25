@@ -177,3 +177,37 @@
 :root[data-theme="dark"] .hover\:text-\[var\(--color-danger\)\]:hover {
     color: #f87171;
 }
+
+/* Lonceng pada lencana "perlu ditangani": bergoyang sekali saat halaman dibuka. */
+@keyframes bell-ring {
+    0%,
+    100% {
+        transform: rotate(0);
+    }
+    15% {
+        transform: rotate(14deg);
+    }
+    30% {
+        transform: rotate(-12deg);
+    }
+    45% {
+        transform: rotate(8deg);
+    }
+    60% {
+        transform: rotate(-5deg);
+    }
+    75% {
+        transform: rotate(2deg);
+    }
+}
+
+.bell-ring {
+    transform-origin: 50% 0;
+    animation: bell-ring 0.9s ease-in-out 0.4s 1 both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bell-ring {
+        animation: none;
+    }
+}

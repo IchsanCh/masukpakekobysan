@@ -1,3 +1,5 @@
+@props(['badgeTotal' => 0])
+
 @php
     $user = auth()->user();
     $initial = mb_strtoupper(mb_substr($user->name ?? 'U', 0, 1));
@@ -9,9 +11,15 @@
      Kanan: ganti tema + menu akun. Target sentuh 44px di mobile, 40px di layar lebar. --}}
 <header
     class="sticky top-0 z-30 flex items-center gap-1 h-14 px-2 sm:px-4 bg-white/80 backdrop-blur-md border-b border-[var(--color-slate-200)]">
-    <label for="sidebar-toggle" aria-label="Buka menu navigasi"
-        class="btn btn-ghost btn-square size-11 rounded-xl lg:hidden cursor-pointer">
+    <label for="sidebar-toggle"
+        aria-label="Buka menu navigasi{{ $badgeTotal > 0 ? ', ada ' . $badgeTotal . ' hal yang perlu ditangani' : '' }}"
+        class="btn btn-ghost btn-square size-11 rounded-xl lg:hidden cursor-pointer relative">
         <x-icon name="bars-3" class="w-5 h-5 text-[var(--color-slate-500)]" />
+        {{-- Titik penanda: sidebar tertutup di mobile, jadi tetap kelihatan ada yang perlu ditangani --}}
+        @if ($badgeTotal > 0)
+            <span class="absolute top-2 right-2 size-2.5 rounded-full bg-warning ring-2 ring-white"
+                aria-hidden="true"></span>
+        @endif
     </label>
 
     <a href="{{ route('dashboard') }}" class="lg:hidden flex items-center gap-2 min-w-0 rounded-lg py-1 pr-1">
