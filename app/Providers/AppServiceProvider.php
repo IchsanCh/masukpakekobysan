@@ -25,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+    // URL::forceScheme('https');
     View::composer(['components.sidebar', 'components.navbar'], function ($view) {
         static $badges = null; // sidebar & navbar sama-sama manggil, hitung sekali per request
 
