@@ -1,4 +1,4 @@
-FROM php:8.4-fpm@sha256:0acf00b3ed7ed77df4568c9981153aadcb134eb435adf43909eb0de054d4fda1
+FROM php:8.4.27-fpm@sha256:af1728147713459bda545446e3fae81cea5119543c46f28b9a077c7b3ff149c2
 
 # System dependencies
 RUN apt-get update && apt-get install -y \

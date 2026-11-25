@@ -13,7 +13,7 @@
                 <div>
                     <p
                         class="font-[var(--font-heading)] text-[15px] font-bold text-[var(--color-navy-900)] leading-tight">
-                        MasukPakEko</p>
+                        MasukPakEko V0.1</p>
                     <p class="text-[11px] text-[var(--color-slate-500)] tracking-wide uppercase">DPMPTSP Pekalongan</p>
                 </div>
             </a>

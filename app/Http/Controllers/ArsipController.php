@@ -12,6 +12,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ArsipController extends Controller
 {
@@ -193,7 +194,7 @@ class ArsipController extends Controller
             ->with('success', "{$berhasil} arsip berhasil disetujui dan dimusnahkan.");
     }
 
-    public function exportCsv(Request $request): Response
+    public function exportCsv(Request $request): StreamedResponse
     {
         $tab = $request->input('tab', 'riwayat');
         $rows = $tab === 'riwayat'
