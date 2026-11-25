@@ -52,9 +52,7 @@
                 </form>
 
                 <p class="text-center text-xs text-[var(--color-slate-500)] mt-7">
-                    Belum punya akun? <a href="wa.me/6281"
-                        class="text-[var(--color-blue-500)] hover:text-[var(--color-blue-600)] hover:underline">Hubungi
-                        agendaris</a>
+                    Belum punya akun? Hubungi agendaris
                 </p>
             </div>
         </div>
