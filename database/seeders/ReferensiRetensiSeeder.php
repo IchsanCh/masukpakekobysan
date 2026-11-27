@@ -39,7 +39,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 1,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '000.1.4',
@@ -48,7 +47,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 1,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '000.1.5',
@@ -57,7 +55,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 1,
                 'nasib_akhir_default'      => 'dinilai_kembali',
                 'keterangan_nasib_akhir'   => 'Musnah, Kecuali Notulen terkait Kebijakan Permanen',
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '000.1.6',
@@ -66,7 +63,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 1,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '000.1.8',
@@ -75,7 +71,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 1,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
 
             // ──────────────────────────────────────────────────────────────
@@ -88,7 +83,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 7,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '000.2.5',
@@ -97,7 +91,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
 
             // ──────────────────────────────────────────────────────────────
@@ -110,7 +103,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '000.3.6',
@@ -119,7 +111,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
 
             // ──────────────────────────────────────────────────────────────
@@ -132,7 +123,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '000.5.3.4',
@@ -141,7 +131,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 1,
                 'nasib_akhir_default'      => 'dinilai_kembali',
                 'keterangan_nasib_akhir'   => 'Musnah, Kecuali Daftar Arsip Dinamis Berdasarkan SKKAAD Permanen',
-                'default_batas_waktu_hari' => 14,
             ],
 
             // ──────────────────────────────────────────────────────────────
@@ -154,7 +143,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '000.7.2.8',
@@ -163,7 +151,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 1,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
 
             // ──────────────────────────────────────────────────────────────
@@ -176,7 +163,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '000.8.3.3',
@@ -185,7 +171,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
 
             // ──────────────────────────────────────────────────────────────
@@ -198,7 +183,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '500.16.2',
@@ -207,7 +191,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '500.16.3.1',
@@ -216,7 +199,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 7,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '500.16.3.2',
@@ -225,7 +207,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 7,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '500.16.3.3',
@@ -234,7 +215,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '500.16.4.1',
@@ -243,7 +223,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '500.16.5.1',
@@ -252,7 +231,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '500.16.6.1',
@@ -261,7 +239,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '500.16.6.4',
@@ -270,7 +247,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
             [
                 'kode_klasifikasi'         => '500.16.6.6',
@@ -279,7 +255,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
             // --- PELAYANAN PERIZINAN — paling sering dipakai DPMPTSP ---
             [
@@ -289,7 +264,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 7,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
             [
                 'kode_klasifikasi'         => '500.16.7.2',
@@ -298,7 +272,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 7,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
             [
                 'kode_klasifikasi'         => '500.16.7.3',
@@ -307,7 +280,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 7,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
             [
                 'kode_klasifikasi'         => '500.16.7.4',
@@ -316,7 +288,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 7,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
             [
                 'kode_klasifikasi'         => '500.16.7.5',
@@ -325,7 +296,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 7,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
 
             // ──────────────────────────────────────────────────────────────
@@ -338,7 +308,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 7,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '700.1.2.1',
@@ -347,7 +316,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 8,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
             [
                 'kode_klasifikasi'         => '700.1.2.2',
@@ -356,7 +324,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
 
             // ──────────────────────────────────────────────────────────────
@@ -369,7 +336,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '800.1.2.1',
@@ -378,7 +344,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'dinilai_kembali',
                 'keterangan_nasib_akhir'   => 'Musnah, Kecuali Penetapan Formasi Khusus Permanen',
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '800.1.2.2',
@@ -387,7 +352,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '800.1.3.2',
@@ -396,7 +360,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 1,
                 'nasib_akhir_default'      => 'dinilai_kembali',
                 'keterangan_nasib_akhir'   => 'Musnah, Kecuali Nota dan SK Masuk Berkas Perseorangan Permanen',
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '800.1.3.3',
@@ -405,7 +368,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 1,
                 'nasib_akhir_default'      => 'dinilai_kembali',
                 'keterangan_nasib_akhir'   => 'Musnah, Kecuali SK Masuk Berkas Perseorangan Permanen',
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '800.1.4.4',
@@ -414,7 +376,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 1,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '800.1.6.1',
@@ -423,7 +384,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
             [
                 'kode_klasifikasi'         => '800.1.6.2',
@@ -432,7 +392,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
             [
                 'kode_klasifikasi'         => '800.1.6.3',
@@ -441,7 +400,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'dinilai_kembali',
                 'keterangan_nasib_akhir'   => 'Musnah, Kecuali SK Masuk Berkas Perseorangan Permanen',
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '800.1.6.6',
@@ -450,7 +408,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 1,
                 'nasib_akhir_default'      => 'dinilai_kembali',
                 'keterangan_nasib_akhir'   => 'Musnah, Kecuali Pensiun Pejabat Tinggi Pratama/Madya/Utama, Pejabat Negara dan Janda/Dudanya Permanen',
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '800.1.11.1',
@@ -459,7 +416,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 1,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '800.1.13.1',
@@ -468,7 +424,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 7,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '800.1.13.3',
@@ -477,7 +432,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 1,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
 
             // ──────────────────────────────────────────────────────────────
@@ -490,7 +444,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
 
             // ──────────────────────────────────────────────────────────────
@@ -503,7 +456,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '900.1.2.4',
@@ -512,7 +464,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '900.1.3.1',
@@ -521,7 +472,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 8,
                 'nasib_akhir_default'      => 'dinilai_kembali',
                 'keterangan_nasib_akhir'   => 'Musnah, Kecuali Berkas terkait Fixed Asset Permanen',
-                'default_batas_waktu_hari' => 7,
             ],
             [
                 'kode_klasifikasi'         => '900.1.3.5',
@@ -530,7 +480,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 8,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
             [
                 'kode_klasifikasi'         => '900.1.3.7',
@@ -539,7 +488,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 8,
                 'nasib_akhir_default'      => 'musnah',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 14,
             ],
             [
                 'kode_klasifikasi'         => '900.1.3.10',
@@ -548,7 +496,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 8,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
             [
                 'kode_klasifikasi'         => '900.1.11.1',
@@ -557,7 +504,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
             [
                 'kode_klasifikasi'         => '900.1.13.1',
@@ -566,7 +512,6 @@ class ReferensiRetensiSeeder extends Seeder
                 'masa_inaktif'             => 3,
                 'nasib_akhir_default'      => 'permanen',
                 'keterangan_nasib_akhir'   => null,
-                'default_batas_waktu_hari' => 7,
             ],
 
         ];
@@ -575,4 +520,4 @@ class ReferensiRetensiSeeder extends Seeder
             ReferensiRetensi::create($item);
         }
     }
-}
+}   

@@ -14,7 +14,6 @@ class ReferensiRetensi extends Model
         'masa_inaktif',
         'nasib_akhir_default',
         'keterangan_nasib_akhir',
-        'default_batas_waktu_hari',
     ];
 
     public function suratMasuk(): HasMany

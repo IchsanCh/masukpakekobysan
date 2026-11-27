@@ -18,7 +18,6 @@ return new class () extends Migration {
             $table->unsignedInteger('masa_inaktif')->default(3);
             $table->enum('nasib_akhir_default', ['musnah', 'permanen', 'dinilai_kembali'])->default('musnah');
             $table->string('keterangan_nasib_akhir')->nullable();
-            $table->unsignedInteger('default_batas_waktu_hari')->nullable();
             $table->timestamps();
         });
     }

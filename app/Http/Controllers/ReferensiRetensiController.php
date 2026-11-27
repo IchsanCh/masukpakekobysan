@@ -39,7 +39,6 @@ class ReferensiRetensiController extends Controller
             'masa_inaktif'             => 'required|integer|min:0',
             'nasib_akhir_default'      => 'required|in:musnah,permanen,dinilai_kembali',
             'keterangan_nasib_akhir'   => 'nullable|string|max:255',
-            'default_batas_waktu_hari' => 'nullable|integer|min:1',
         ]);
 
         ReferensiRetensi::create($validated);
@@ -57,7 +56,6 @@ class ReferensiRetensiController extends Controller
             'masa_inaktif'             => 'required|integer|min:0',
             'nasib_akhir_default'      => 'required|in:musnah,permanen,dinilai_kembali',
             'keterangan_nasib_akhir'   => 'nullable|string|max:255',
-            'default_batas_waktu_hari' => 'nullable|integer|min:1',
         ]);
 
         $retensi->update($validated);
