@@ -1,4 +1,4 @@
-{{-- Pagination untuk halaman Surat Masuk & Surat Keluar.
+{{-- Pagination untuk Surat Masuk, Surat Keluar, dan Pengguna (label: links('vendor.pagination.surat', ['label' => 'pengguna'])).
      Mobile: tombol Sebelumnya / Berikutnya besar + posisi halaman.
      Tablet ke atas: memakai view pagination global (nomor halaman). --}}
 @if ($paginator->hasPages())
@@ -21,7 +21,7 @@
 
                 <div class="px-1 flex flex-col items-center justify-center text-center leading-tight min-w-[4.5rem]">
                     <span class="text-sm font-semibold text-[var(--color-navy-900)]">{{ $paginator->currentPage() }} / {{ $paginator->lastPage() }}</span>
-                    <span class="text-xs text-[var(--color-slate-500)]">{{ $paginator->total() }} surat</span>
+                    <span class="text-xs text-[var(--color-slate-500)]">{{ $paginator->total() }} {{ $label ?? 'surat' }}</span>
                 </div>
 
                 @if ($paginator->hasMorePages())

@@ -20,48 +20,70 @@
     </div>
 
     {{-- Pencarian + filter status: di atas data, di luar kartu --}}
-    <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-center">
-        <form method="GET" action="{{ route('surat-keluar.index') }}" role="search" class="relative md:w-80">
-            @if (request('status_arsip'))
-                <input type="hidden" name="status_arsip" value="{{ request('status_arsip') }}">
-            @endif
-            <x-icon name="magnifying-glass"
-                class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-slate-400)] pointer-events-none" />
-            <input type="search" name="search" value="{{ request('search') }}" enterkeyhint="search"
-                placeholder="Cari no. surat, tujuan, atau isi..." aria-label="Cari surat"
-                class="w-full min-h-11 pl-10 pr-11 text-base md:text-sm rounded-xl border border-[var(--color-slate-200)] bg-white
-                       placeholder:text-[var(--color-slate-400)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all" />
-            @if (request('search'))
-                <a href="{{ route('surat-keluar.index', array_filter(['status_arsip' => request('status_arsip')])) }}" aria-label="Hapus pencarian"
-                    class="absolute right-1 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-slate-600)]">
-                    <x-icon name="x-mark" class="w-4 h-4" />
-                </a>
-            @endif
-        </form>
+    <div class="mb-4 space-y-2">
+        <div class="flex flex-col gap-3 md:flex-row md:items-center">
+            <form method="GET" action="{{ route('surat-keluar.index') }}" role="search" class="flex gap-2 md:w-96">
+                @if (request('status_arsip'))
+                    <input type="hidden" name="status_arsip" value="{{ request('status_arsip') }}">
+                @endif
+                <div class="relative flex-1 min-w-0">
+                    <x-icon name="magnifying-glass"
+                        class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-slate-400)] pointer-events-none" />
+                    <input type="search" name="search" value="{{ request('search') }}" enterkeyhint="search"
+                        placeholder="Cari nomor atau tujuan" aria-label="Cari surat"
+                        class="w-full min-h-11 pl-9 pr-10 text-base md:text-sm rounded-xl border border-[var(--color-slate-200)] bg-white
+                               [&::-webkit-search-cancel-button]:appearance-none
+                               placeholder:text-[var(--color-slate-400)] focus:outline-none focus:border-[var(--color-blue-500)] focus:ring-2 focus:ring-[var(--color-blue-500)]/10 transition-all" />
+                    @if (request('search'))
+                        <a href="{{ route('surat-keluar.index', array_filter(['status_arsip' => request('status_arsip')])) }}" aria-label="Hapus pencarian"
+                            class="absolute right-0.5 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-slate-600)]">
+                            <x-icon name="x-mark" class="w-4 h-4" />
+                        </a>
+                    @endif
+                </div>
+                <button type="submit" aria-label="Cari"
+                    class="shrink-0 w-11 h-11 flex items-center justify-center rounded-xl text-white
+                           bg-gradient-to-br from-[var(--color-blue-500)] to-[var(--color-blue-600)]
+                           active:scale-95 transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-blue-500)]/40">
+                    <x-icon name="magnifying-glass" class="w-4 h-4" />
+                </button>
+            </form>
 
-        <nav aria-label="Filter" class="-mx-4 px-4 sm:-mx-6 sm:px-6 md:mx-0 md:px-0 overflow-x-auto flex gap-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            @foreach ([
-            '' => 'Semua',
-            'aktif' => 'Aktif',
-            'inaktif' => 'Inaktif',
-            'permanen' => 'Permanen'
-            ] as $val => $label)
-                @php $active = (string) request('status_arsip') === (string) $val; @endphp
-                <a href="{{ route('surat-keluar.index', array_filter(['search' => request('search'), 'status_arsip' => $val])) }}"
-                    @if ($active) aria-current="true" @endif
-                    class="shrink-0 inline-flex items-center min-h-10 px-4 rounded-full text-sm font-medium border transition-colors
-                           {{ $active
-                               ? 'bg-[var(--color-navy-700)] text-white border-transparent'
-                               : 'bg-white border-[var(--color-slate-200)] text-[var(--color-slate-600)] hover:border-[var(--color-slate-300)] hover:text-[var(--color-navy-900)]' }}">
-                    {{ $label }}
-                </a>
-            @endforeach
-        </nav>
+            {{-- Filter status: semua pilihan selalu terlihat (tanpa geser) --}}
+            <nav aria-label="Filter status"
+                class="grid grid-cols-4 gap-1 p-1 rounded-xl bg-[var(--color-slate-100)] md:inline-grid md:grid-cols-[repeat(4,auto)]">
+                @foreach ([
+                '' => 'Semua',
+                'aktif' => 'Aktif',
+                'inaktif' => 'Inaktif',
+                'permanen' => 'Permanen'
+                ] as $val => $label)
+                    @php $active = (string) request('status_arsip') === (string) $val; @endphp
+                    <a href="{{ route('surat-keluar.index', array_filter(['search' => request('search'), 'status_arsip' => $val])) }}"
+                        @if ($active) aria-current="true" @endif
+                        class="min-h-10 inline-flex items-center justify-center px-2 md:px-4 rounded-lg text-sm font-medium transition-colors
+                               focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-blue-500)]/40
+                               {{ $active
+                                   ? 'bg-[var(--color-navy-700)] text-white'
+                                   : 'text-[var(--color-slate-600)] hover:text-[var(--color-navy-900)]' }}">
+                        {{ $label }}
+                    </a>
+                @endforeach
+            </nav>
+        </div>
+
+        @if (request('search') || request('status_arsip'))
+            <div class="flex items-center justify-between gap-3 text-sm">
+                <p class="text-[var(--color-slate-600)]" role="status">{{ $suratKeluars->total() }} surat ditemukan</p>
+                <a href="{{ route('surat-keluar.index') }}"
+                    class="min-h-11 inline-flex items-center px-1 font-medium text-[var(--color-blue-600)] hover:underline">Reset</a>
+            </div>
+        @endif
     </div>
 
     @if ($suratKeluars->isEmpty())
         <div class="bg-white rounded-2xl border border-[var(--color-slate-200)]/70
-                shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_28px_-10px_rgba(15,23,42,0.10)] md:overflow-hidden px-5 py-14 text-center">
+                shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_28px_-10px_rgba(15,23,42,0.10)] xl:overflow-hidden px-5 py-14 text-center">
             <div class="w-12 h-12 rounded-2xl bg-[var(--color-slate-100)] flex items-center justify-center mx-auto mb-3">
                 <x-icon name="paper-airplane" class="w-5 h-5 text-[var(--color-slate-400)]" />
             </div>
@@ -75,10 +97,10 @@
         </div>
     @else
         <div class="bg-white rounded-2xl border border-[var(--color-slate-200)]/70
-                shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_28px_-10px_rgba(15,23,42,0.10)] md:overflow-hidden">
+                shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_28px_-10px_rgba(15,23,42,0.10)] xl:overflow-hidden">
 
             {{-- Daftar: mobile --}}
-            <ul class="md:hidden divide-y divide-[var(--color-slate-100)]">
+            <ul class="xl:hidden divide-y divide-[var(--color-slate-100)]">
                 @foreach ($suratKeluars as $s)
                     @php
                         $arsipMap = [
@@ -98,7 +120,7 @@
                                 <p class="text-xs text-[var(--color-slate-500)] mt-1 line-clamp-2">{{ $s->isi_ringkasan }}</p>
                             </div>
                             @if ($s->file_surat || $bisaKelola)
-                                <x-row-menu>
+                                <x-row-menu :up="$loop->remaining < 2 && $loop->count > 4">
                                     @if ($s->file_surat)
                                         <a href="{{ asset('storage/' . $s->file_surat) }}" target="_blank" role="menuitem" class="row-menu-item">
                                             <x-icon name="eye" class="w-4 h-4 text-[var(--color-slate-400)]" />
@@ -135,7 +157,7 @@
             </ul>
 
             {{-- Tabel: tablet ke atas --}}
-            <div class="hidden md:block overflow-x-auto">
+            <div class="hidden xl:block overflow-x-auto">
                 <table class="w-full">
                     <thead>
                         <tr class="bg-[var(--color-slate-50)]/60 border-b border-[var(--color-slate-100)]">
@@ -216,11 +238,13 @@
                                 </td>
                                 <td class="px-5 py-3.5 text-center">
                                     @if ($s->file_surat)
-                                        <a href="{{ asset('storage/' . $s->file_surat) }}" target="_blank"
-                                            class="inline-flex p-1.5 rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-blue-500)] hover:bg-[var(--color-blue-50)] transition-colors"
-                                            title="Lihat File">
-                                            <x-icon name="eye" class="w-4 h-4" />
-                                        </a>
+                                        <x-action-tip label="Lihat File">
+                                            <a href="{{ asset('storage/' . $s->file_surat) }}" target="_blank"
+                                                class="inline-flex p-1.5 rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-blue-500)] hover:bg-[var(--color-blue-50)] transition-colors"
+                                                aria-label="Lihat File">
+                                                <x-icon name="eye" class="w-4 h-4" />
+                                            </a>
+                                        </x-action-tip>
                                     @else
                                         <span class="text-xs text-[var(--color-slate-300)]">-</span>
                                     @endif
@@ -228,20 +252,24 @@
                                 <td class="px-5 py-3.5 text-right">
                                     <div class="flex items-center justify-end gap-1">
                                         @if ($s->canBeManagedBy($user))
-                                        <a href="{{ route('surat-keluar.edit', $s) }}"
-                                            class="p-1.5 rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-blue-500)] hover:bg-[var(--color-blue-50)] transition-colors"
-                                            title="Edit">
-                                            <x-icon name="pencil-square" class="w-4 h-4" />
-                                        </a>
-                                        <button
-                                            @click="$dispatch('confirm-delete', {
-                                            url: '{{ route('surat-keluar.destroy', $s) }}',
-                                            name: '{{ addslashes($s->nomor_surat) }}'
-                                        })"
-                                            class="p-1.5 rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-danger)] hover:bg-red-50 transition-colors"
-                                            title="Hapus">
-                                            <x-icon name="trash" class="w-4 h-4" />
-                                        </button>
+                                        <x-action-tip label="Edit">
+                                            <a href="{{ route('surat-keluar.edit', $s) }}"
+                                                class="p-1.5 rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-blue-500)] hover:bg-[var(--color-blue-50)] transition-colors"
+                                                aria-label="Edit">
+                                                <x-icon name="pencil-square" class="w-4 h-4" />
+                                            </a>
+                                        </x-action-tip>
+                                        <x-action-tip label="Hapus">
+                                            <button
+                                                @click="$dispatch('confirm-delete', {
+                                                url: '{{ route('surat-keluar.destroy', $s) }}',
+                                                name: '{{ addslashes($s->nomor_surat) }}'
+                                            })"
+                                                class="p-1.5 rounded-lg text-[var(--color-slate-400)] hover:text-[var(--color-danger)] hover:bg-red-50 transition-colors"
+                                                aria-label="Hapus">
+                                                <x-icon name="trash" class="w-4 h-4" />
+                                            </button>
+                                        </x-action-tip>
                                         @else
                                             <span class="text-xs text-[var(--color-slate-300)]">-</span>
                                         @endif
